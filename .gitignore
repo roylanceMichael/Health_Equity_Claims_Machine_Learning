@@ -213,3 +213,9 @@ pip-log.txt
 
 #Mr Developer
 .mr.developer.cfg
+data/Balance.csv
+data/Claim.csv
+data/ClaimDetail.csv
+data/ContributionAndPayment.csv
+data/Dependent.csv
+data/Member.csv
