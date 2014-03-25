@@ -1,4 +1,4 @@
-Health_Equity_Claims_Machine_Learning
+Health Equity Machine Learning Competition
 =====================================
 
 Algorithms associated with predicting claims data
