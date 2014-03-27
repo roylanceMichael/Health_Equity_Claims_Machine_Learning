@@ -1,4 +1,3 @@
-import numpy as np
 import csv as csv
 import re
 import os
@@ -15,6 +14,20 @@ class OrderedClaimsHmmBuilder:
 				tempDict[key][subkey] = 1
 		else:
 			tempDict[key] = { subkey: 1 }
+
+	def buildDict(self, oldDict):
+		newDict = {}
+		for key in oldDict:
+			total = 0
+
+			for subkey in oldDict[key]:
+				total = total + oldDict[key][subkey]
+
+			newDict[key] = {}
+			for subkey in oldDict[key]:
+				newDict[key][subkey] = float(oldDict[key][subkey]) / total
+
+		return newDict
 
 	def build(self):
 		csv_file_object = csv.reader(open(self.fileName, 'rb'))
@@ -51,10 +64,8 @@ class OrderedClaimsHmmBuilder:
 
 			previousCptCode = rowCptCode
 
-		# TODO: create probabilities out of these now
-		emissionsProb = {}
-		transitionsProb = {}
+		# create probabilities out of these now
+		emissionsProb = self.buildDict(emissions)
+		transitionsProb = self.buildDict(transitions)
 
-		
-
-		return (emissions, transitions)
+		return (emissionsProb, transitionsProb)
