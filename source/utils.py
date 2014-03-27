@@ -1,7 +1,9 @@
 import csv as csv
 
-def createCsvFromMarkovDict(markovDict, fileName):
+def createCsvFromMarkovDict(markovDict, columnNames, fileName):
 	open_file_object = csv.writer(open(fileName, "wb"))
+
+	open_file_object.writerow(columnNames)
 
 	for key in markovDict:
 		for subkey in markovDict[key]:

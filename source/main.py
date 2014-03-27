@@ -7,6 +7,8 @@ def main():
 	claimsDetailsOrderedMemberIDDateFile = sys.argv[1]
 	transitionsOutputFileName = "data/transitions.csv"
 	emissionsOutputFileName = "data/emissions.csv"
+	transitionColumnNames = ["From_CPT", "To_CPT", "Probability"]
+	emissionColumnNames = ["CPT", "Total_Amount", "Probability"]
 
 	# get the build
 	builder = orderedClaimsHmmBuilder.OrderedClaimsHmmBuilder(claimsDetailsOrderedMemberIDDateFile)
@@ -15,8 +17,8 @@ def main():
 	dictionaryTuples = builder.build()
 
 	# save to file
-	utils.createCsvFromMarkovDict(dictionaryTuples[0], emissionsOutputFileName)
-	utils.createCsvFromMarkovDict(dictionaryTuples[1], transitionsOutputFileName)
+	utils.createCsvFromMarkovDict(dictionaryTuples[0], emissionColumnNames, emissionsOutputFileName)
+	utils.createCsvFromMarkovDict(dictionaryTuples[1], transitionColumnNames, transitionsOutputFileName)
 
 if __name__ == '__main__':
         main()
