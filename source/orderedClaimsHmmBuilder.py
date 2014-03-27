@@ -51,4 +51,10 @@ class OrderedClaimsHmmBuilder:
 
 			previousCptCode = rowCptCode
 
+		# TODO: create probabilities out of these now
+		emissionsProb = {}
+		transitionsProb = {}
+
+		
+
 		return (emissions, transitions)
