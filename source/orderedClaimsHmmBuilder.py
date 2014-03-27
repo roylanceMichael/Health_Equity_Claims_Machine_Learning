@@ -3,8 +3,10 @@ import re
 import os
 
 class OrderedClaimsHmmBuilder:
-	def __init__(self, fileName):
+	def __init__(self, fileName, ignoreRx=False):
 		self.fileName = fileName
+		self.rxCode = "Rx"
+		self.ignoreRx = ignoreRx
 
 	def setDict(self, tempDict, key, subkey):
 		if tempDict.has_key(key):
@@ -43,25 +45,35 @@ class OrderedClaimsHmmBuilder:
 		# CPT -> CPT
 		transitions = {}
 
-		previousCptCode = ''
+		previousCptCode = ""
 		for row in csv_file_object:
 			rowMemberId = int(row[0])
 			rowCptCode = row[1]
+
+			# reigning in Rx a bit...
+			if self.ignoreRx and rowCptCode == self.rxCode:
+				continue
 
 			patientAmount = float(row[2])
 			repricedAmount = float(row[3])
 
 			totalAmount = str(patientAmount + repricedAmount)
+			self.setDict(emissions, rowCptCode, totalAmount)
 
-			# set current cpt code to one in row if a new group
-			if previousCptCode == '' or rowMemberId != currentMemberId:
+			if previousCptCode == '':
 				currentMemberId = rowMemberId
 				previousCptCode = rowCptCode
 				continue
 
-			self.setDict(emissions, rowCptCode, totalAmount)
-			self.setDict(transitions, previousCptCode, rowCptCode)
+			# set current cpt code to one in row if a new group
+			if previousCptCode != "" and rowMemberId != currentMemberId:
+				# set final state
+				self.setDict(transitions, previousCptCode, 'END_STATE')
+				currentMemberId = rowMemberId
+				previousCptCode = rowCptCode
+				continue
 
+			self.setDict(transitions, previousCptCode, rowCptCode)
 			previousCptCode = rowCptCode
 
 		# create probabilities out of these now

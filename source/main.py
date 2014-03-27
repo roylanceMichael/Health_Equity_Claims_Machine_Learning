@@ -11,7 +11,7 @@ def main():
 	emissionColumnNames = ["CPT", "Total_Amount", "Probability"]
 
 	# get the build
-	builder = orderedClaimsHmmBuilder.OrderedClaimsHmmBuilder(claimsDetailsOrderedMemberIDDateFile)
+	builder = orderedClaimsHmmBuilder.OrderedClaimsHmmBuilder(claimsDetailsOrderedMemberIDDateFile, True)
 
 	# get the hmm dictionaries
 	dictionaryTuples = builder.build()

@@ -13,7 +13,7 @@ def main():
 	emissionDictionary = utils.createMarkovDictFromCsv(emissionsOutputFileName)
 
 	# find most likely path
-	mostTaken = 10
+	mostTaken = 100
 	taken = 0
 	pathTaken = []
 	currentPath = cptStart
