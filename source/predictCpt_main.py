@@ -1,6 +1,7 @@
 import sys
 import utils
 import orderedClaimsHmmBuilder
+import predictCpt
 
 def main():
 	# file names - hard coded for now
@@ -13,28 +14,7 @@ def main():
 	emissionDictionary = utils.createMarkovDictFromCsv(emissionsOutputFileName)
 
 	# find most likely path
-	mostTaken = 100
-	taken = 0
-	pathTaken = []
-	currentPath = cptStart
-
-	while currentPath != None and taken < mostTaken:
-		if transitionDictionary.has_key(currentPath):
-			pathTaken.append(currentPath)
-
-			bestPath = ""
-			bestProb = -1
-
-			for subkey in transitionDictionary[currentPath]:
-				if bestProb < transitionDictionary[currentPath][subkey]:
-					bestProb = transitionDictionary[currentPath][subkey]
-					bestPath = subkey
-
-			currentPath = bestPath
-		else:
-			currentPath = None
-
-		taken = taken + 1
+	pathTaken = predictCpt.predictPaths(cptStart, transitionDictionary)
 
 	print "best path:"
 	for path in pathTaken:
