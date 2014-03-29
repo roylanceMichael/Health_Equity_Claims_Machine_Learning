@@ -1,4 +1,11 @@
 import csv as csv
+import os.path
+import json
+
+configFile = "config.json"
+def readConfigFile():
+	with open(configFile) as configFileStream:
+		return json.load(configFileStream)
 
 def createCsvFromMarkovDict(markovDict, columnNames, fileName):
 	open_file_object = csv.writer(open(fileName, "wb"))
