@@ -5,16 +5,18 @@ import predictCpt
 
 def main():
 	# file names - hard coded for now
-	cptStart = sys.argv[1]
-	transitionsOutputFileName = "data/transitions.csv"
+	cpts = sys.argv[1:]
+	trainTransitionsOutputFileName = "data/trainTransitions.csv"
+	testTransitionsOutputFileName = "data/testTransitions.csv"
 	emissionsOutputFileName = "data/emissions.csv"
 
 	# convert to dictionaries
-	transitionDictionary = utils.createMarkovDictFromCsv(transitionsOutputFileName)
+	trainTransitionDictionary = utils.createMarkovDictFromCsv(trainTransitionsOutputFileName)
+	testTransitionDictionary = utils.createMarkovDictFromCsv(testTransitionsOutputFileName)
 	emissionDictionary = utils.createMarkovDictFromCsv(emissionsOutputFileName)
 
 	# find most likely path
-	pathTaken = predictCpt.predictPaths(cptStart, transitionDictionary)
+	pathTaken = predictCpt.predictPaths(cpts, transitionDictionary)
 
 	print "best path:"
 	for path in pathTaken:

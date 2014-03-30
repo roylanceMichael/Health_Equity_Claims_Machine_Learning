@@ -3,6 +3,10 @@ import os.path
 import json
 
 configFile = "config.json"
+startState = "START_STATE"
+endState = "END_STATE"
+rxCode = "Rx"
+
 def readConfigFile():
 	with open(configFile) as configFileStream:
 		return json.load(configFileStream)

@@ -1,14 +1,13 @@
 import csv as csv
 import re
 import os
+import random
+import utils
 
 class OrderedClaimsHmmBuilder:
-	def __init__(self, fileName, ignoreRx=False):
+	def __init__(self, fileName, setSplit=0.8):
 		self.fileName = fileName
-		self.rxCode = "Rx"
-		self.startState = "START_STATE"
-		self.endState = "END_STATE"
-		self.ignoreRx = ignoreRx
+		self.setSplit = setSplit
 
 	def setDict(self, tempDict, key, subkey):
 		if tempDict.has_key(key):
@@ -33,6 +32,11 @@ class OrderedClaimsHmmBuilder:
 
 		return newDict
 
+	def determineDictionary(self, test, train):
+		if random.random() > self.setSplit:
+			return test
+		return train
+
 	def build(self):
 		csv_file_object = csv.reader(open(self.fileName, 'rb'))
 		header = csv_file_object.next()
@@ -46,25 +50,26 @@ class OrderedClaimsHmmBuilder:
 		emissions = {}
 
 		# CPT -> CPT
-		transitions = {}
+		testTransitions = {}
+		trainTransitions = {}
 
-		previousCptCode = self.startState
+		transitions = self.determineDictionary(testTransitions, trainTransitions)
+
+		previousCptCode = utils.startState
 		for row in csv_file_object:
 			rowMemberId = row[0]
 			dependentId = row[1]
 			currentCptCode = row[2]
-
-			if currentCptCode == self.rxCode:
-				if self.ignoreRx:
-					continue
 
 			patientAmount = float(row[3])
 
 			totalAmount = str(patientAmount)
 			self.setDict(emissions, currentCptCode, totalAmount)
 
-			if previousCptCode == self.startState:
-				self.setDict(transitions, self.startState, currentCptCode)
+			if previousCptCode == utils.startState:
+				self.setDict(transitions, utils.startState, currentCptCode)
+				
+				transitions = self.determineDictionary(testTransitions, trainTransitions)
 				currentMemberId = rowMemberId
 				currentDependentId = dependentId
 				previousCptCode = currentCptCode
@@ -72,8 +77,10 @@ class OrderedClaimsHmmBuilder:
 
 			if rowMemberId != currentMemberId or dependentId != currentDependentId:
 				# set final state
-				self.setDict(transitions, previousCptCode, self.endState)
-				self.setDict(transitions, self.startState, currentCptCode)
+				self.setDict(transitions, previousCptCode, utils.endState)
+				
+				transitions = self.determineDictionary(testTransitions, trainTransitions)
+				self.setDict(transitions, utils.startState, currentCptCode)
 				currentMemberId = rowMemberId
 				currentDependentId = dependentId
 				previousCptCode = currentCptCode
@@ -84,6 +91,7 @@ class OrderedClaimsHmmBuilder:
 
 		# create probabilities out of these now
 		emissionsProb = self.buildDict(emissions)
-		transitionsProb = self.buildDict(transitions)
+		trainTransitionsProb = self.buildDict(trainTransitions)
+		testTransitionsProb = self.buildDict(testTransitions)
 
-		return (emissionsProb, transitionsProb)
+		return (emissionsProb, trainTransitionsProb, testTransitionsProb)

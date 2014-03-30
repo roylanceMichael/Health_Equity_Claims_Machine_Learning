@@ -1,8 +1,21 @@
-def predictPaths(cptStart, transitionDictionary, maxToTake=100):
+import utils
+
+def predictPaths(cpts, transitionDictionary, maxToTake=100):
  	# find most likely path
 	taken = 0
 	pathTaken = []
-	currentPath = cptStart
+	modifiedCpts = utils.startState + cpts
+
+	for i in range(1, len(modifiedCpts)):
+		previousCpt = modifiedCpts[i-1]
+		currentCpt = modifiedCpts[i]
+
+		if (transitionDictionary.has_key(previousCpt) and 
+			transitionDictionary[previousCpt].has_key(currentCpt)):
+			
+
+
+	currentPath = cpts
 
 	while currentPath != None and taken < maxToTake:
 		if transitionDictionary.has_key(currentPath):
@@ -23,3 +36,4 @@ def predictPaths(cptStart, transitionDictionary, maxToTake=100):
 		taken = taken + 1
 
 	return pathTaken
+
