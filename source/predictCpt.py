@@ -1,7 +1,8 @@
 import utils
 
 def goldFileCheck(goldFileDict, transitionDictionary, emissionDictionary, maxToTake=100):
-	
+	totalErrors = 0
+	total = 0
 	for key in goldFileDict:
 		previous = utils.startState
 		current = ""
@@ -9,6 +10,8 @@ def goldFileCheck(goldFileDict, transitionDictionary, emissionDictionary, maxToT
 		goldAmount = 0
 		path = previous
 		trainAmount = 0
+		total = total + 1
+
 		for tup in goldFileDict[key]:
 			current = tup[0]
 			path = path + " " + current
@@ -26,13 +29,17 @@ def goldFileCheck(goldFileDict, transitionDictionary, emissionDictionary, maxToT
 					previous = current
 					continue
 
-			yield 'could not find a transition from %s to %s' % (previous, current)
+			totalErrors = totalErrors + 1
+			yield "could not find a transition from %s to %s" % (previous, current)
+			yield ""
 			break
 
 		yield "path: " + path
 		yield "gold: " + str(goldAmount)
 		yield "train: " + str(trainAmount)
 		yield ""
+
+	yield "total errors: " + str(totalErrors) + "/" + str(total)
 
 def getHighestProb(markovDict, key):
 	highestSubkey = ""
