@@ -6,6 +6,8 @@ class OrderedClaimsHmmBuilder:
 	def __init__(self, fileName, ignoreRx=False):
 		self.fileName = fileName
 		self.rxCode = "Rx"
+		self.startState = "START_STATE"
+		self.endState = "END_STATE"
 		self.ignoreRx = ignoreRx
 
 	def setDict(self, tempDict, key, subkey):
@@ -45,36 +47,37 @@ class OrderedClaimsHmmBuilder:
 		# CPT -> CPT
 		transitions = {}
 
-		previousCptCode = ""
+		previousCptCode = self.startState
 		for row in csv_file_object:
 			rowMemberId = int(row[0])
-			rowCptCode = row[1]
+			currentCptCode = row[1]
 
-			# reigning in Rx a bit...
-			if self.ignoreRx and rowCptCode == self.rxCode:
-				continue
+			if currentCptCode == self.rxCode:
+				if self.ignoreRx:
+					continue
 
 			patientAmount = float(row[2])
 			repricedAmount = float(row[3])
 
-			totalAmount = str(patientAmount + repricedAmount)
-			self.setDict(emissions, rowCptCode, totalAmount)
+			totalAmount = str(repricedAmount)
+			self.setDict(emissions, currentCptCode, totalAmount)
 
-			if previousCptCode == '':
+			if previousCptCode == self.startState:
+				self.setDict(transitions, self.startState, currentCptCode)
 				currentMemberId = rowMemberId
-				previousCptCode = rowCptCode
+				previousCptCode = currentCptCode
 				continue
 
-			# set current cpt code to one in row if a new group
-			if previousCptCode != "" and rowMemberId != currentMemberId:
+			if rowMemberId != currentMemberId:
 				# set final state
-				self.setDict(transitions, previousCptCode, 'END_STATE')
+				self.setDict(transitions, previousCptCode, self.endState)
+				self.setDict(transitions, self.startState, currentCptCode)
 				currentMemberId = rowMemberId
-				previousCptCode = rowCptCode
+				previousCptCode = currentCptCode
 				continue
 
-			self.setDict(transitions, previousCptCode, rowCptCode)
-			previousCptCode = rowCptCode
+			self.setDict(transitions, previousCptCode, currentCptCode)
+			previousCptCode = currentCptCode
 
 		# create probabilities out of these now
 		emissionsProb = self.buildDict(emissions)

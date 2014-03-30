@@ -220,3 +220,4 @@ data/ContributionAndPayment.csv
 data/Dependent.csv
 data/Member.csv
 data/ClaimDetailsOrderByMemberIDDate.csv
+data/ClaimDetailDependent.csv
