@@ -39,7 +39,8 @@ class OrderedClaimsHmmBuilder:
 
 		# read all of a member's claims in at once
 		# NewMemberID, CPTCode
-		currentMemberId = 0
+		currentMemberId = ""
+		currentDependentId = ""
 
 		# CPT -> cost
 		emissions = {}
@@ -49,30 +50,32 @@ class OrderedClaimsHmmBuilder:
 
 		previousCptCode = self.startState
 		for row in csv_file_object:
-			rowMemberId = int(row[0])
-			currentCptCode = row[1]
+			rowMemberId = row[0]
+			dependentId = row[1]
+			currentCptCode = row[2]
 
 			if currentCptCode == self.rxCode:
 				if self.ignoreRx:
 					continue
 
-			patientAmount = float(row[2])
-			repricedAmount = float(row[3])
+			patientAmount = float(row[3])
 
-			totalAmount = str(repricedAmount)
+			totalAmount = str(patientAmount)
 			self.setDict(emissions, currentCptCode, totalAmount)
 
 			if previousCptCode == self.startState:
 				self.setDict(transitions, self.startState, currentCptCode)
 				currentMemberId = rowMemberId
+				currentDependentId = dependentId
 				previousCptCode = currentCptCode
 				continue
 
-			if rowMemberId != currentMemberId:
+			if rowMemberId != currentMemberId or dependentId != currentDependentId:
 				# set final state
 				self.setDict(transitions, previousCptCode, self.endState)
 				self.setDict(transitions, self.startState, currentCptCode)
 				currentMemberId = rowMemberId
+				currentDependentId = dependentId
 				previousCptCode = currentCptCode
 				continue
 
