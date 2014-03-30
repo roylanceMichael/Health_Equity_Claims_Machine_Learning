@@ -20,6 +20,14 @@ def createCsvFromMarkovDict(markovDict, columnNames, fileName):
 		for subkey in markovDict[key]:
 			open_file_object.writerow([key, subkey, markovDict[key][subkey]])
 
+def createGoldStandardFile(goldStandardDict, fileName):
+	with open(fileName, 'w') as outfile:
+	  json.dump(goldStandardDict, outfile)
+
+def createGoldStandardDict(fileName):
+	with open(fileName) as inFile:
+		return json.load(inFile)
+
 def createMarkovDictFromCsv(fileName):
 	csv_file_object = csv.reader(open(fileName, 'rb'))
 	header = csv_file_object.next()

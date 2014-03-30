@@ -5,7 +5,7 @@ import random
 import utils
 
 class OrderedClaimsHmmBuilder:
-	def __init__(self, fileName, setSplit=0.8):
+	def __init__(self, fileName, setSplit=0.98):
 		self.fileName = fileName
 		self.setSplit = setSplit
 
@@ -34,8 +34,8 @@ class OrderedClaimsHmmBuilder:
 
 	def determineDictionary(self, test, train):
 		if random.random() > self.setSplit:
-			return test
-		return train
+			return (test, True)
+		return (train, False)
 
 	def createCurrentState(self, previousState, currentState):
 		# are we Rx?
@@ -64,9 +64,14 @@ class OrderedClaimsHmmBuilder:
 		testTransitions = {}
 		trainTransitions = {}
 
-		transitions = self.determineDictionary(testTransitions, trainTransitions)
+		# gold standard for testing
+		goldStandard = {}
 
-		nonRxPreviousState = utils.startState
+		# initial one will be thrown away
+		transitions = {}
+
+		isTest = False
+
 		previousCptCode = utils.startState
 		for row in csv_file_object:
 			rowMemberId = row[0]
@@ -78,27 +83,28 @@ class OrderedClaimsHmmBuilder:
 
 			self.setDict(emissions, currentCptCode, totalAmount)
 
-			if previousCptCode == utils.startState:
-				self.setDict(transitions, utils.startState, currentCptCode)
-				
-				transitions = self.determineDictionary(testTransitions, trainTransitions)
-				currentMemberId = rowMemberId
-				currentDependentId = dependentId
-				previousCptCode = currentCptCode
-				continue
-
 			if rowMemberId != currentMemberId or dependentId != currentDependentId:
 				# set final state
 				self.setDict(transitions, previousCptCode, utils.endState)
 				
-				transitions = self.determineDictionary(testTransitions, trainTransitions)
+				(transitions, isTest) = self.determineDictionary(testTransitions, trainTransitions)
+
+				# set start state
 				self.setDict(transitions, utils.startState, currentCptCode)
+
+				if isTest:
+					goldStandard[rowMemberId + dependentId] = [(currentCptCode, totalAmount)]
+				
 				currentMemberId = rowMemberId
 				currentDependentId = dependentId
 				previousCptCode = currentCptCode
 				continue
 
 			self.setDict(transitions, previousCptCode, currentCptCode)
+
+			if isTest:
+				goldStandard[rowMemberId + dependentId].append((currentCptCode, totalAmount))
+
 			previousCptCode = currentCptCode
 
 		# create probabilities out of these now
@@ -106,4 +112,4 @@ class OrderedClaimsHmmBuilder:
 		trainTransitionsProb = self.buildDict(trainTransitions)
 		testTransitionsProb = self.buildDict(testTransitions)
 
-		return (emissionsProb, trainTransitionsProb, testTransitionsProb)
+		return (emissionsProb, trainTransitionsProb, testTransitionsProb, goldStandard)

@@ -1,39 +1,44 @@
 import utils
 
-def predictPaths(cpts, transitionDictionary, maxToTake=100):
- 	# find most likely path
-	taken = 0
-	pathTaken = []
-	modifiedCpts = utils.startState + cpts
+def goldFileCheck(goldFileDict, transitionDictionary, emissionDictionary, maxToTake=100):
+	
+	for key in goldFileDict:
+		previous = utils.startState
+		current = ""
 
-	for i in range(1, len(modifiedCpts)):
-		previousCpt = modifiedCpts[i-1]
-		currentCpt = modifiedCpts[i]
+		goldAmount = 0
+		path = previous
+		trainAmount = 0
+		for tup in goldFileDict[key]:
+			current = tup[0]
+			path = path + " " + current
+			amount = float(tup[1])
 
-		if (transitionDictionary.has_key(previousCpt) and 
-			transitionDictionary[previousCpt].has_key(currentCpt)):
-			
+			if (transitionDictionary.has_key(previous) and 
+				transitionDictionary[previous].has_key(current)):
 
+				if emissionDictionary.has_key(current):
+					goldAmount = goldAmount + amount
+					trainAmount = trainAmount + float(getHighestProb(emissionDictionary, current))
 
-	currentPath = cpts
+					previous = current
+					continue
 
-	while currentPath != None and taken < maxToTake:
-		if transitionDictionary.has_key(currentPath):
-			pathTaken.append(currentPath)
+			yield 'could not find a transition from %s to %s' % (previous, current)
+			break
 
-			bestPath = ""
-			bestProb = -1
+		yield "path: " + path
+		yield "gold: " + str(goldAmount)
+		yield "train: " + str(trainAmount)
+		yield ""
 
-			for subkey in transitionDictionary[currentPath]:
-				if bestProb < transitionDictionary[currentPath][subkey]:
-					bestProb = transitionDictionary[currentPath][subkey]
-					bestPath = subkey
+def getHighestProb(markovDict, key):
+	highestSubkey = ""
+	highestProb = -1
 
-			currentPath = bestPath
-		else:
-			currentPath = None
+	for subkey in markovDict[key]:
+		if markovDict[key][subkey] > highestProb:
+			highestSubkey = subkey
+			highestProb = markovDict[key][subkey]
 
-		taken = taken + 1
-
-	return pathTaken
-
+	return highestSubkey
