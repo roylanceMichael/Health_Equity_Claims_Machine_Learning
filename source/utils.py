@@ -22,7 +22,7 @@ def createCsvFromMarkovDict(markovDict, columnNames, fileName):
 
 def createGoldStandardFile(goldStandardDict, fileName):
 	with open(fileName, 'w') as outfile:
-	  json.dump(goldStandardDict, outfile)
+	  json.dump(goldStandardDict, outfile, indent=4)
 
 def createGoldStandardDict(fileName):
 	with open(fileName) as inFile:

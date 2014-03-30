@@ -17,9 +17,11 @@ def goldFileCheck(goldFileDict, transitionDictionary, emissionDictionary, maxToT
 			if (transitionDictionary.has_key(previous) and 
 				transitionDictionary[previous].has_key(current)):
 
-				if emissionDictionary.has_key(current):
+				emissionKey = previous + "_" + current
+
+				if emissionDictionary.has_key(emissionKey):
 					goldAmount = goldAmount + amount
-					trainAmount = trainAmount + float(getHighestProb(emissionDictionary, current))
+					trainAmount = trainAmount + float(getHighestProb(emissionDictionary, emissionKey))
 
 					previous = current
 					continue

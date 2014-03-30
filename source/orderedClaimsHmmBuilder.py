@@ -81,16 +81,16 @@ class OrderedClaimsHmmBuilder:
 			patientAmount = float(row[3])
 			totalAmount = str(patientAmount)
 
-			self.setDict(emissions, currentCptCode, totalAmount)
-
 			if rowMemberId != currentMemberId or dependentId != currentDependentId:
 				# set final state
 				self.setDict(transitions, previousCptCode, utils.endState)
+				self.setDict(emissions, previousCptCode + "_" + utils.endState, totalAmount)
 				
 				(transitions, isTest) = self.determineDictionary(testTransitions, trainTransitions)
 
 				# set start state
 				self.setDict(transitions, utils.startState, currentCptCode)
+				self.setDict(emissions, utils.startState + "_" + currentCptCode, totalAmount)
 
 				if isTest:
 					goldStandard[rowMemberId + dependentId] = [(currentCptCode, totalAmount)]
@@ -101,7 +101,8 @@ class OrderedClaimsHmmBuilder:
 				continue
 
 			self.setDict(transitions, previousCptCode, currentCptCode)
-
+			self.setDict(emissions, previousCptCode + "_" + currentCptCode, totalAmount)
+			
 			if isTest:
 				goldStandard[rowMemberId + dependentId].append((currentCptCode, totalAmount))
 
