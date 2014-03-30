@@ -22,8 +22,8 @@ J7324 -> 96372
 96372 -> END_STATE
 
 with the transitions also recorded in an emissions dictionary:
-J7324 -> 100.00
-96372 -> 13.00
+START_STATE_J7324 -> 100.00
+J7324_96372 -> 13.00
 
 We then look at all the records, by person, to find the service transitions and their costs
 
