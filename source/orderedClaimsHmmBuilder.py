@@ -37,6 +37,17 @@ class OrderedClaimsHmmBuilder:
 			return test
 		return train
 
+	def createCurrentState(self, previousState, currentState):
+		# are we Rx?
+		isPreviousStateRx = previousState.find(utils.rxCode) != -1
+		isCurrentStateRx = currentState == utils.rxCode
+		
+		if isCurrentStateRx:
+			if isPreviousStateRx:
+				return previousState
+			return previousState + currentState
+		return currentState
+
 	def build(self):
 		csv_file_object = csv.reader(open(self.fileName, 'rb'))
 		header = csv_file_object.next()
@@ -55,15 +66,16 @@ class OrderedClaimsHmmBuilder:
 
 		transitions = self.determineDictionary(testTransitions, trainTransitions)
 
+		nonRxPreviousState = utils.startState
 		previousCptCode = utils.startState
 		for row in csv_file_object:
 			rowMemberId = row[0]
 			dependentId = row[1]
-			currentCptCode = row[2]
+			currentCptCode = self.createCurrentState(previousCptCode, row[2])
 
 			patientAmount = float(row[3])
-
 			totalAmount = str(patientAmount)
+
 			self.setDict(emissions, currentCptCode, totalAmount)
 
 			if previousCptCode == utils.startState:
