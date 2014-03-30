@@ -4,6 +4,8 @@ import orderedClaimsHmmBuilder
 
 def main():
 	# sys variables
+	transformedDir = "transformed"
+	claimsDetailsOrderedMemberIDDateZipFile = "transformed/ClaimDetailDependent.zip"
 	claimsDetailsOrderedMemberIDDateFile = "transformed/ClaimDetailDependent.csv"
 	trainTransitionsOutputFileName = "transformed/trainTransitions.csv"
 	testTransitionsOutputFileName = "transformed/testTransitions.csv"
@@ -11,6 +13,10 @@ def main():
 	goldStandardFileName = "transformed/goldStandard.json"
 	transitionColumnNames = ["From_CPT", "To_CPT", "Probability"]
 	emissionColumnNames = ["CPT", "Total_Amount", "Probability"]
+
+	# extract data, if it doesn't exist
+	print "extracting claims data - if it doesn't exist already"
+	utils.extractFileIfNotExists(claimsDetailsOrderedMemberIDDateZipFile, claimsDetailsOrderedMemberIDDateFile, transformedDir)
 
 	# get the build
 	builder = orderedClaimsHmmBuilder.OrderedClaimsHmmBuilder(claimsDetailsOrderedMemberIDDateFile)

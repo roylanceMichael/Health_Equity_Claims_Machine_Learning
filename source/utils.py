@@ -1,3 +1,4 @@
+import zipfile
 import csv as csv
 import os.path
 import json
@@ -10,6 +11,13 @@ rxCode = "Rx"
 def readConfigFile():
 	with open(configFile) as configFileStream:
 		return json.load(configFileStream)
+
+def extractFileIfNotExists(zipFileName, fileName, zipDir):
+	if not os.path.isfile(fileName) and os.path.isfile(zipFileName):
+		zfile = zipfile.ZipFile(zipFileName)
+
+		for name in zfile.namelist():
+			zfile.extract(name, zipDir)
 
 def createCsvFromMarkovDict(markovDict, columnNames, fileName):
 	open_file_object = csv.writer(open(fileName, "wb"))
