@@ -37,7 +37,7 @@ class OrderedClaimsHmmBuilder:
 			return (test, True)
 		return (train, False)
 
-	def createCurrentState(self, previousState, currentState):
+	def createCurrentState(self, previousState, currentState, row, buildType):
 		# are we Rx?
 		isPreviousStateRx = previousState.find(utils.rxCode) != -1
 		isCurrentStateRx = currentState == utils.rxCode
@@ -46,9 +46,19 @@ class OrderedClaimsHmmBuilder:
 			if isPreviousStateRx:
 				return previousState
 			return previousState + currentState
+
+		ageGroup = utils.mapBirthYearGroups(row[6], 1972)
+		gender = row[7]
+
+		if buildType == utils.ageGender:
+			return gender + "_" + ageGroup + "_" + currentState
+		if buildType == utils.genderOnly:
+			return gender + "_" + currentState
+		if buildType == utils.ageOnly:
+			return ageGroup + "_" + currentState
 		return currentState
 
-	def build(self):
+	def build(self, buildType):
 		csv_file_object = csv.reader(open(self.fileName, 'rb'))
 		header = csv_file_object.next()
 
@@ -76,7 +86,7 @@ class OrderedClaimsHmmBuilder:
 		for row in csv_file_object:
 			rowMemberId = row[0]
 			dependentId = row[1]
-			currentCptCode = self.createCurrentState(previousCptCode, row[2])
+			currentCptCode = self.createCurrentState(previousCptCode, row[2], row, buildType)
 
 			patientAmount = float(row[3])
 			totalAmount = str(patientAmount)
@@ -89,11 +99,13 @@ class OrderedClaimsHmmBuilder:
 				(transitions, isTest) = self.determineDictionary(testTransitions, trainTransitions)
 
 				# set start state
-				self.setDict(transitions, utils.startState, currentCptCode)
-				self.setDict(emissions, utils.startState + "_" + currentCptCode, totalAmount)
+				startState = utils.startState
+				self.setDict(transitions, startState, currentCptCode)
+				self.setDict(emissions, startState + "_" + currentCptCode, totalAmount)
 
 				if isTest:
-					goldStandard[rowMemberId + dependentId] = [(currentCptCode, totalAmount)]
+					goldStandard[rowMemberId + dependentId] = [(startState, 0)]
+					goldStandard[rowMemberId + dependentId].append((currentCptCode, totalAmount))
 				
 				currentMemberId = rowMemberId
 				currentDependentId = dependentId

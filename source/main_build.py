@@ -7,10 +7,10 @@ def main():
 	transformedDir = "transformed"
 	claimsDetailsOrderedMemberIDDateZipFile = "transformed/ClaimDetailDependent.zip"
 	claimsDetailsOrderedMemberIDDateFile = "transformed/ClaimDetailDependent.csv"
-	trainTransitionsOutputFileName = "transformed/trainTransitions.csv"
-	testTransitionsOutputFileName = "transformed/testTransitions.csv"
-	emissionsOutputFileName = "transformed/emissions.csv"
-	goldStandardFileName = "transformed/goldStandard.json"
+	trainTransitionsOutputFileName = "transformed/%strainTransitions.csv"
+	testTransitionsOutputFileName = "transformed/%stestTransitions.csv"
+	emissionsOutputFileName = "transformed/%sEmissions.csv"
+	goldStandardFileName = "transformed/%sGoldStandard.json"
 	transitionColumnNames = ["From_CPT", "To_CPT", "Probability"]
 	emissionColumnNames = ["CPT", "Total_Amount", "Probability"]
 
@@ -22,15 +22,16 @@ def main():
 	builder = orderedClaimsHmmBuilder.OrderedClaimsHmmBuilder(claimsDetailsOrderedMemberIDDateFile)
 
 	# get the hmm dictionaries
-	print "building the models and gold standard test file"
-	dictionaryTuples = builder.build()
+	for filteringType in utils.filteringTypes:
+		print "building the models and gold standard test file with %s" % (filteringType)
+		dictionaryTuples = builder.build(filteringType)
 
-	# save to file
-	print "saving the models and gold standard test file to transformed/"
-	utils.createCsvFromMarkovDict(dictionaryTuples[0], emissionColumnNames, emissionsOutputFileName)
-	utils.createCsvFromMarkovDict(dictionaryTuples[1], transitionColumnNames, trainTransitionsOutputFileName)
-	utils.createCsvFromMarkovDict(dictionaryTuples[2], transitionColumnNames, testTransitionsOutputFileName)
-	utils.createGoldStandardFile(dictionaryTuples[3], goldStandardFileName)
+		# save to file
+		print "saving the models and gold standard test file to transformed/"
+		utils.createCsvFromMarkovDict(dictionaryTuples[0], emissionColumnNames, (emissionsOutputFileName % (filteringType)))
+		utils.createCsvFromMarkovDict(dictionaryTuples[1], transitionColumnNames, (trainTransitionsOutputFileName % (filteringType)))
+		utils.createCsvFromMarkovDict(dictionaryTuples[2], transitionColumnNames, (testTransitionsOutputFileName % (filteringType)))
+		utils.createGoldStandardFile(dictionaryTuples[3], (goldStandardFileName % (filteringType)))
 
 if __name__ == '__main__':
         main()

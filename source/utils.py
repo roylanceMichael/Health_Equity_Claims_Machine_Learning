@@ -8,6 +8,24 @@ startState = "START_STATE"
 endState = "END_STATE"
 rxCode = "Rx"
 
+noFiltering = "noFiltering"
+ageOnly = "ageOnly"
+genderOnly = "genderOnly"
+ageGender = "ageGender"
+
+filteringTypes = [noFiltering, ageOnly, genderOnly, ageGender]
+
+def mapBirthYearGroups(birthYear, thresholdYear):
+	# two groups
+	# A (before x) and B (after x)
+	try:
+		castedBirthYear = int(birthYear)
+		if castedBirthYear < thresholdYear:
+			return "Before" + str(thresholdYear)
+		return "After" + str(thresholdYear)
+	except:
+		return "After" + str(thresholdYear)
+
 def readConfigFile():
 	with open(configFile) as configFileStream:
 		return json.load(configFileStream)
