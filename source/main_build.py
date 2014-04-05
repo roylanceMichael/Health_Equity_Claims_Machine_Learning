@@ -1,6 +1,7 @@
 import sys
 import utils
 import orderedClaimsHmmBuilder
+import cptToCcs
 
 def main():
 	# sys variables
@@ -18,6 +19,10 @@ def main():
 	print "extracting claims data - if it doesn't exist already"
 	utils.extractFileIfNotExists(claimsDetailsOrderedMemberIDDateZipFile, claimsDetailsOrderedMemberIDDateFile, transformedDir)
 
+	# ensure cptToCss file exists
+	print "buildint cptToCss dictionary - if needed"
+	cptToCcs.createCptToCcsDictionary()
+
 	# get the build
 	builder = orderedClaimsHmmBuilder.OrderedClaimsHmmBuilder(claimsDetailsOrderedMemberIDDateFile)
 
@@ -30,7 +35,7 @@ def main():
 		print "saving the models and gold standard test file to transformed/"
 		utils.createCsvFromMarkovDict(dictionaryTuples[0], emissionColumnNames, (emissionsOutputFileName % (filteringType)))
 		utils.createCsvFromMarkovDict(dictionaryTuples[1], transitionColumnNames, (trainTransitionsOutputFileName % (filteringType)))
-		utils.createCsvFromMarkovDict(dictionaryTuples[2], transitionColumnNames, (testTransitionsOutputFileName % (filteringType)))
+		
 		utils.createGoldStandardFile(dictionaryTuples[3], (goldStandardFileName % (filteringType)))
 
 if __name__ == '__main__':

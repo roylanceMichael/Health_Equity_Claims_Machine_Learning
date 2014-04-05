@@ -87,10 +87,12 @@ class OrderedClaimsHmmBuilder:
 		for row in csv_file_object:
 			rowMemberId = row[0]
 			dependentId = row[1]
-			currentCptCode = self.createCurrentState(previousCptCode, row[2], row, buildType)
-			unfilteredCptCode = self.createRxState(previousCptCode, row[2])
+			rawCode = row[3]
 
-			patientAmount = float(row[3])
+			currentCptCode = self.createCurrentState(previousCptCode, rawCode, row, buildType)
+			unfilteredCptCode = self.createRxState(previousCptCode, rawCode)
+
+			patientAmount = float(row[4])
 			totalAmount = str(patientAmount)
 
 			if rowMemberId != currentMemberId or dependentId != currentDependentId:
