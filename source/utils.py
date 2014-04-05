@@ -13,9 +13,21 @@ ageOnly = "ageOnly"
 genderOnly = "genderOnly"
 ageGender = "ageGender"
 
+thresholdYear = 1972
+
 filteringTypes = [noFiltering, ageOnly, genderOnly, ageGender]
 
-def mapBirthYearGroups(birthYear, thresholdYear):
+def buildTransition(filterOption, gender, birthYear):
+	if filterOption == noFiltering:
+		return ""
+	elif filterOption == ageOnly:
+		return mapBirthYearGroups(birthYear) + "_"
+	elif filterOption == genderOnly:
+		return gender + "_"
+	else:
+		return gender + "_" + mapBirthYearGroups(birthYear) + "_"
+
+def mapBirthYearGroups(birthYear):
 	# two groups
 	# A (before x) and B (after x)
 	try:

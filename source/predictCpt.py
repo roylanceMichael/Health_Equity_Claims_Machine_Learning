@@ -1,62 +1,58 @@
 import utils
 
-def goldFileCheck(goldFileDict, transitionDictionary, emissionDictionary, maxToTake=100):
+def goldFileCheck(goldFileList, transitionDictionary, emissionDictionary, filterOption, maxToTake=100):
 	totalErrors = 0
 	total = 0
-	for key in goldFileDict:
-		previous = ""
-		current = ""
+	previous = ""
+	current = ""
 
-		goldAmount = 0
-		path = previous
-		trainAmount = 0
-		trainHighest = 0
-		trainLowest = 0
-		total = total + 1
-		foundError = False
+	goldAmount = 0
+	path = previous
+	trainAmount = 0
+	trainHighest = 0
+	trainLowest = 0
+	total = total + 1
+	foundError = False
 
-		for tup in goldFileDict[key]:
-			# handle start state
-			if previous == "":
-				previous = tup[0]
-				path = path + " " + previous
-				continue
-
-			current = tup[0]
-			path = path + " " + current
-			amount = float(tup[1])
-
-			if (transitionDictionary.has_key(previous) and 
-				transitionDictionary[previous].has_key(current)):
-
-				emissionKey = previous + "_" + current
-
-				if emissionDictionary.has_key(emissionKey):
-					goldAmount = goldAmount + amount
-					trainAmount = trainAmount + float(getHighestProb(emissionDictionary, emissionKey))
-					trainHighest = trainHighest + getHighestAmount(emissionDictionary, emissionKey)
-					trainLowest = trainLowest + getLowestAmount(emissionDictionary, emissionKey)
-					previous = current
-					continue
-
-			totalErrors = totalErrors + 1
-			foundError = True
-			yield "could not find a transition from %s to %s" % (previous, current)
-			yield "\n"
-			break
-
-		# don't report if there was an error...
-		if foundError == True:
+	for tup in goldFileList:
+		# handle start state
+		if previous == "":
+			previous = tup[0]
+			path = path + " " + previous
 			continue
 
-		yield "path: " + path
-		yield "gold: " + str(goldAmount)
-		yield "trainMostFrequent: " + str(trainAmount)
-		yield "trainLowest: " + str(trainLowest)
-		yield "trainHighest: " + str(trainHighest)
-		yield "\n"
+		current = utils.buildTransition(filterOption, tup[3], tup[2]) + tup[0]
+		path = path + " " + current
+		amount = float(tup[1])
 
-	yield "total errors: " + str(totalErrors) + "/" + str(total)
+		if (transitionDictionary.has_key(previous) and 
+			transitionDictionary[previous].has_key(current)):
+
+			emissionKey = previous + "_" + current
+
+			if emissionDictionary.has_key(emissionKey):
+				goldAmount = goldAmount + amount
+				trainAmount = trainAmount + float(getHighestProb(emissionDictionary, emissionKey))
+				trainHighest = trainHighest + getHighestAmount(emissionDictionary, emissionKey)
+				trainLowest = trainLowest + getLowestAmount(emissionDictionary, emissionKey)
+				previous = current
+				continue
+
+		totalErrors = totalErrors + 1
+		foundError = True
+		yield "could not find a transition from %s to %s" % (previous, current)
+		yield "\n"
+		break
+
+	# don't report if there was an error...
+	if foundError == True:
+		return
+
+	yield "path: " + path
+	yield "gold: " + str(goldAmount)
+	yield "trainMostFrequent: " + str(trainAmount)
+	yield "trainLowest: " + str(trainLowest)
+	yield "trainHighest: " + str(trainHighest)
 	yield "\n"
 
 def getHighestProb(markovDict, key):

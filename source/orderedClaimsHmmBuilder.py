@@ -37,7 +37,7 @@ class OrderedClaimsHmmBuilder:
 			return (test, True)
 		return (train, False)
 
-	def createCurrentState(self, previousState, currentState, row, buildType):
+	def createRxState(self, previousState, currentState):
 		# are we Rx?
 		isPreviousStateRx = previousState.find(utils.rxCode) != -1
 		isCurrentStateRx = currentState == utils.rxCode
@@ -46,17 +46,18 @@ class OrderedClaimsHmmBuilder:
 			if isPreviousStateRx:
 				return previousState
 			return previousState + currentState
+		return currentState
 
-		ageGroup = utils.mapBirthYearGroups(row[6], 1972)
+	def createCurrentState(self, previousState, currentState, row, buildType):
+		rxState = self.createRxState(previousState, currentState)
+
+		if rxState != currentState:
+			return rxState
+
+		ageGroup = utils.mapBirthYearGroups(row[6])
 		gender = row[7]
 
-		if buildType == utils.ageGender:
-			return gender + "_" + ageGroup + "_" + currentState
-		if buildType == utils.genderOnly:
-			return gender + "_" + currentState
-		if buildType == utils.ageOnly:
-			return ageGroup + "_" + currentState
-		return currentState
+		return utils.buildTransition(buildType, gender, ageGroup) + currentState
 
 	def build(self, buildType):
 		csv_file_object = csv.reader(open(self.fileName, 'rb'))
@@ -87,6 +88,7 @@ class OrderedClaimsHmmBuilder:
 			rowMemberId = row[0]
 			dependentId = row[1]
 			currentCptCode = self.createCurrentState(previousCptCode, row[2], row, buildType)
+			unfilteredCptCode = self.createRxState(previousCptCode, row[2])
 
 			patientAmount = float(row[3])
 			totalAmount = str(patientAmount)
@@ -105,7 +107,7 @@ class OrderedClaimsHmmBuilder:
 
 				if isTest:
 					goldStandard[rowMemberId + dependentId] = [(startState, 0)]
-					goldStandard[rowMemberId + dependentId].append((currentCptCode, totalAmount))
+					goldStandard[rowMemberId + dependentId].append((unfilteredCptCode, totalAmount, row[6], row[7]))
 				
 				currentMemberId = rowMemberId
 				currentDependentId = dependentId
@@ -116,7 +118,7 @@ class OrderedClaimsHmmBuilder:
 			self.setDict(emissions, previousCptCode + "_" + currentCptCode, totalAmount)
 			
 			if isTest:
-				goldStandard[rowMemberId + dependentId].append((currentCptCode, totalAmount))
+				goldStandard[rowMemberId + dependentId].append((unfilteredCptCode, totalAmount, row[6], row[7]))
 
 			previousCptCode = currentCptCode
 
