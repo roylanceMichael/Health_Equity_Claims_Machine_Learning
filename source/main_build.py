@@ -27,16 +27,17 @@ def main():
 	builder = orderedClaimsHmmBuilder.OrderedClaimsHmmBuilder(claimsDetailsOrderedMemberIDDateFile)
 
 	# get the hmm dictionaries
-	for filteringType in utils.filteringTypes:
-		print "building the models and gold standard test file with %s" % (filteringType)
-		dictionaryTuples = builder.build(filteringType)
+	# for filteringType in utils.filteringTypes:
+	filteringType = utils.ageLocation
 
-		# save to file
-		print "saving the models and gold standard test file to transformed/"
-		utils.createCsvFromMarkovDict(dictionaryTuples[0], emissionColumnNames, (emissionsOutputFileName % (filteringType)))
-		utils.createCsvFromMarkovDict(dictionaryTuples[1], transitionColumnNames, (trainTransitionsOutputFileName % (filteringType)))
-		
-		utils.createGoldStandardFile(dictionaryTuples[3], (goldStandardFileName % (filteringType)))
+	print "building the models and gold standard test file with %s" % (filteringType)
+	dictionaryTuples = builder.build(filteringType)
+
+	# save to file
+	print "saving the models and gold standard test file to transformed/"
+	utils.createCsvFromMarkovDict(dictionaryTuples[0], emissionColumnNames, (emissionsOutputFileName % (filteringType)))
+	utils.createCsvFromMarkovDict(dictionaryTuples[1], transitionColumnNames, (trainTransitionsOutputFileName % (filteringType)))
+	utils.createGoldStandardFile(dictionaryTuples[3], (goldStandardFileName % (filteringType)))
 
 if __name__ == '__main__':
         main()

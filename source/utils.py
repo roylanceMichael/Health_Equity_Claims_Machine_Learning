@@ -2,6 +2,7 @@ import zipfile
 import csv as csv
 import os.path
 import json
+import time
 
 configFile = "config.json"
 startState = "START_STATE"
@@ -12,14 +13,17 @@ noFiltering = "noFiltering"
 ageOnly = "ageOnly"
 genderOnly = "genderOnly"
 ageGender = "ageGender"
+ageLocation = "ageLocation"
 
-thresholdYear = 1972
+currentYear = int(time.strftime("%Y"))
 
 filteringTypes = [noFiltering, ageOnly, genderOnly, ageGender]
 
-def buildTransition(filterOption, gender, birthYear):
+def buildTransition(filterOption, gender, birthYear, zip, state):
 	if filterOption == noFiltering:
 		return ""
+	elif filterOption == ageLocation:
+		return mapBirthYearGroups(birthYear) + "_" + state
 	elif filterOption == ageOnly:
 		return mapBirthYearGroups(birthYear) + "_"
 	elif filterOption == genderOnly:
@@ -32,11 +36,18 @@ def mapBirthYearGroups(birthYear):
 	# A (before x) and B (after x)
 	try:
 		castedBirthYear = int(birthYear)
-		if castedBirthYear < thresholdYear:
-			return "Before" + str(thresholdYear)
-		return "After" + str(thresholdYear)
+
+		age = currentYear - castedBirthYear
+
+		if age < 30:
+			return "Under30"
+
+		if age < 60:
+			return "Under60"
+
+		return "Over60"
 	except:
-		return "After" + str(thresholdYear)
+		return "UnknownAge"
 
 def readConfigFile():
 	with open(configFile) as configFileStream:

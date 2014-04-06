@@ -5,9 +5,10 @@ import random
 import utils
 
 class OrderedClaimsHmmBuilder:
-	def __init__(self, fileName, setSplit=0.98):
+	def __init__(self, fileName, useCpt=False, setSplit=0.98):
 		self.fileName = fileName
 		self.setSplit = setSplit
+		self.useCpt = useCpt
 
 	def setDict(self, tempDict, key, subkey):
 		if tempDict.has_key(key):
@@ -54,10 +55,7 @@ class OrderedClaimsHmmBuilder:
 		if rxState != currentState:
 			return rxState
 
-		ageGroup = utils.mapBirthYearGroups(row[6])
-		gender = row[7]
-
-		return utils.buildTransition(buildType, gender, ageGroup) + currentState
+		return utils.buildTransition(buildType, row[7], row[6], row[8], row[9]) + currentState
 
 	def build(self, buildType):
 		csv_file_object = csv.reader(open(self.fileName, 'rb'))
@@ -88,11 +86,13 @@ class OrderedClaimsHmmBuilder:
 			rowMemberId = row[0]
 			dependentId = row[1]
 			rawCode = row[3]
+			if self.useCpt:
+				rawCode = row[2]
 
 			currentCptCode = self.createCurrentState(previousCptCode, rawCode, row, buildType)
 			unfilteredCptCode = self.createRxState(previousCptCode, rawCode)
 
-			patientAmount = float(row[4])
+			patientAmount = float(row[5])
 			totalAmount = str(patientAmount)
 
 			if rowMemberId != currentMemberId or dependentId != currentDependentId:
@@ -109,7 +109,7 @@ class OrderedClaimsHmmBuilder:
 
 				if isTest:
 					goldStandard[rowMemberId + dependentId] = [(startState, 0)]
-					goldStandard[rowMemberId + dependentId].append((unfilteredCptCode, totalAmount, row[6], row[7]))
+					goldStandard[rowMemberId + dependentId].append((unfilteredCptCode, totalAmount, row[6], row[7], row[8], row[9]))
 				
 				currentMemberId = rowMemberId
 				currentDependentId = dependentId
@@ -120,7 +120,7 @@ class OrderedClaimsHmmBuilder:
 			self.setDict(emissions, previousCptCode + "_" + currentCptCode, totalAmount)
 			
 			if isTest:
-				goldStandard[rowMemberId + dependentId].append((unfilteredCptCode, totalAmount, row[6], row[7]))
+				goldStandard[rowMemberId + dependentId].append((unfilteredCptCode, totalAmount, row[6], row[7], row[8], row[9]))
 
 			previousCptCode = currentCptCode
 
