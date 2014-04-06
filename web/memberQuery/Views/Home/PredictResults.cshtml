@@ -1,0 +1,51 @@
+﻿@model IEnumerable<MemberQuery.Models.PredictResult>
+<div class="navbar navbar-inverse navbar-fixed-top">
+	<div class="container">
+		<div class="navbar-collapse collapse">
+			<ul class="nav navbar-nav">
+				<li><a href="@Url.Action("Index", "Home")">Home</a></li>
+				<li class="active"><a href="@Url.Action("PredictResults", "Home")">Predict Results</a></li>
+			</ul>
+		</div>
+	</div>
+</div>
+
+<div class="container" role="main">
+	@{
+		foreach (var result in this.Model)
+		{
+		<div class="row">
+			<div class="col-lg-12">
+				<table class="table-condensed">
+					<thead>
+						<tr>
+							<th>Gold Amount</th>
+							<th>Expected Amount</th>
+							<th>Highest Probability</th>
+							<th>Lowest Amount</th>
+							<th>Highest Amount</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td>@result.GoldAmount</td>
+							<td>@result.ExpectedAmount</td>
+							<td>@result.TrainAmount</td>
+							<td>@result.TrainLowest</td>
+							<td>@result.TrainHighest</td>
+						</tr>
+						<tr>
+							<th>Path</th>
+						</tr>
+						<tr>
+							<td colspan="5">
+								@result.Path
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>	
+		} 
+	}
+</div>
