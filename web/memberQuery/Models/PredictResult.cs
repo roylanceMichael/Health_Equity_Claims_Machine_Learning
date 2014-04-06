@@ -17,6 +17,23 @@
 
 		public double? TrainHighest { get; set; }
 
+		public double? GoldExpectedVariation
+		{
+			get
+			{
+				if (this.GoldAmount.HasValue && this.ExpectedAmount.HasValue)
+				{
+					return Math.Round(this.GoldAmount.Value / this.ExpectedAmount.Value, 2);
+				}
+
+				return null;
+			}
+		}
+
+		public double GoldExpectedVariance { get; set; }
+
+		public double GoldExpectedStandardDeviation { get; set; }
+
 		public static PredictResult Factory(SqlDataReader reader)
 		{
 			return new PredictResult

@@ -1,4 +1,4 @@
-﻿@model IEnumerable<MemberQuery.Models.PredictResult>
+﻿@model MemberQuery.Models.PredictResults
 <div class="navbar navbar-inverse navbar-fixed-top">
 	<div class="container">
 		<div class="navbar-collapse collapse">
@@ -11,8 +11,27 @@
 </div>
 
 <div class="container" role="main">
+	<div class="row">
+		<div class="col-lg-12">
+			<table class="table-condensed">
+				<thead>
+					<tr>
+						<th>Gold To Expected Average Variation</th>
+						<th>Gold To Expected Standard Deviation</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td>@(this.Model.GoldToExpectedAverageVariation)</td>
+						<td>@(this.Model.GoldToExpectedStandardDeviation)</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+
 	@{
-		foreach (var result in this.Model)
+		foreach (var result in this.Model.Predictions)
 		{
 		<div class="row">
 			<div class="col-lg-12">
@@ -21,6 +40,8 @@
 						<tr>
 							<th>Gold Amount</th>
 							<th>Expected Amount</th>
+							<th>Gold To Expected Variation</th>
+							<th>Gold To Expected Deviation</th>
 							<th>Highest Probability</th>
 							<th>Lowest Amount</th>
 							<th>Highest Amount</th>
@@ -30,6 +51,8 @@
 						<tr>
 							<td>@result.GoldAmount</td>
 							<td>@result.ExpectedAmount</td>
+							<td>@result.GoldExpectedVariation</td>
+							<td>@result.GoldExpectedStandardDeviation</td>
 							<td>@result.TrainAmount</td>
 							<td>@result.TrainLowest</td>
 							<td>@result.TrainHighest</td>
@@ -38,7 +61,7 @@
 							<th>Path</th>
 						</tr>
 						<tr>
-							<td colspan="5">
+							<td colspan="7">
 								@result.Path
 							</td>
 						</tr>

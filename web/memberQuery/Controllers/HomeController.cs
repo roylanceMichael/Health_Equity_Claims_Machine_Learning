@@ -1,22 +1,38 @@
 ﻿namespace MemberQuery.Controllers
 {
+	using System.Collections.Generic;
 	using System.Configuration;
 	using System.Linq;
 	using System.Web.Mvc;
 
 	using MemberQuery.Builders;
+	using MemberQuery.Models;
 
 	public class HomeController : Controller
 	{
-		public ActionResult Index()
+		private readonly string connectionString;
+
+		public HomeController()
 		{
-			return this.View();
+			this.connectionString = ConfigurationManager.AppSettings["ConnectionString"];
+		}
+
+		public ActionResult Index(string birthYear, string state, string previousCpts)
+		{
+			if (!string.IsNullOrWhiteSpace(birthYear))
+			{
+				return this.View(new QueryResultsBuilder(this.connectionString, birthYear, state, previousCpts).Build());
+			}
+
+			return this.View(new QueryResults
+				                 {
+					                 Results = new Dictionary<TransitionRecord, List<EmissionRecord>>()
+				                 });
 		}
 
 		public ActionResult PredictResults()
 		{
-			var connectionString = ConfigurationManager.AppSettings["ConnectionString"];
-			return this.View(new PredictResultsBuilder(connectionString).Build().ToList());
+			return this.View(new PredictResults(new PredictResultsBuilder(this.connectionString).Build().ToList()));
 		}
 	}
 }

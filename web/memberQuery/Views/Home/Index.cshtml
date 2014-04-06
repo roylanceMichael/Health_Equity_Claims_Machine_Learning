@@ -1,4 +1,5 @@
-﻿<div class="navbar navbar-inverse navbar-fixed-top">
+﻿@model MemberQuery.Models.QueryResults
+<div class="navbar navbar-inverse navbar-fixed-top">
 	<div class="container">
 		<div class="navbar-collapse collapse">
 			<ul class="nav navbar-nav">
@@ -13,19 +14,73 @@
 	<div class="row">
 		<h1>Health Equity Member Query</h1>
 		<h3>Question:</h3>
-<h3>We have provided Claim data for our members and we want you to predict when our members need to add money to their HSA accounts.</h3>
-<h3>You can include any other data sources you like to make a case to show why people should add money to their HSA accounts at a given time.  Using Age/location can make a difference in the prediction as well.</h3>
+		<h3>We have provided Claim data for our members and we want you to predict when our members need to add money to their HSA accounts.</h3>
+		<h3>You can include any other data sources you like to make a case to show why people should add money to their HSA accounts at a given time.  Using Age/location can make a difference in the prediction as well.</h3>
 	</div>
 
 	<div class="row">
-		member information: <input type="text" /> <button>query</button>
+		<form role="form" action="@Url.Action("Index")" method="GET">
+			<div class="form-group">
+				<label for="birthYear">birth year</label>
+				<input type="text" class="form-control" placeholder="birth year" name="birthYear" />
+			</div>
+			<div class="form-group">
+				<label for="state">state</label>
+				<input type="text" class="form-control" placeholder="state" name="state" />
+			</div>
+			<div class="form-group">
+				<label for="previousCpts">previous cpts</label>
+				<input type="text" class="form-control" placeholder="previous cpts (comma separated, blank for none)" name="previousCpts" />
+			</div>
+			<div class="form-group">
+				<button class="btn btn-default" type="submit">query</button>
+			</div>
+		</form>
 	</div>
-	
+
 	<div class="row">
-		
-	</div>
-	
-	<div class="row">
-		
+		@{
+			foreach (var kvp in this.Model.Results.OrderByDescending(pair => pair.Key.Probability))
+			{
+			<div class="col-lg-4">
+				<table class="table-condensed">
+					<thead>
+						<tr>
+							<th>From</th>
+							<th>To</th>
+							<th>Probability</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td>@kvp.Key.FromTransition</td>
+							<td>@kvp.Key.ToTransition</td>
+							<td>@kvp.Key.Probability</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			
+			<div class="col-lg-8">
+				<table class="table-condensed">
+					<thead>
+						<tr>
+							<th>Amount</th>
+							<th>Probability</th>
+						</tr>
+					</thead>
+					<tbody>
+						@foreach (var emission in kvp.Value.OrderByDescending(record => record.Probability))
+			{
+							<tr>
+								<td>@emission.TotalAmount</td>
+								<td>@emission.Probability</td>
+							</tr>
+			}
+					</tbody>
+				</table>
+			</div>
+			}					
+		}
 	</div>
 </div>
