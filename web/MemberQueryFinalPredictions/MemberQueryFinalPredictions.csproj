@@ -49,7 +49,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\web\memberQuery\memberQuery.csproj">
+    <ProjectReference Include="..\memberQuery\memberQuery.csproj">
       <Project>{7f04a722-9dd0-45a9-9570-80e97cc22b20}</Project>
       <Name>memberQuery</Name>
     </ProjectReference>

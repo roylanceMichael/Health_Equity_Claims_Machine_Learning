@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "memberQuery", "memberQuery\memberQuery.csproj", "{7F04A722-9DD0-45A9-9570-80E97CC22B20}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MemberQueryFinalPredictions", "..\MemberQueryFinalPredictions\MemberQueryFinalPredictions.csproj", "{F97BA9B6-8188-4134-8EBB-27F70B48A86D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MemberQueryFinalPredictions", "MemberQueryFinalPredictions\MemberQueryFinalPredictions.csproj", "{F97BA9B6-8188-4134-8EBB-27F70B48A86D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
