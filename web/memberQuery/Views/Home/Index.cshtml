@@ -23,15 +23,27 @@
 		<form role="form" action="@Url.Action("Index")" method="GET">
 			<div class="form-group">
 				<label for="birthYear">birth year</label>
-				<input type="text" class="form-control" placeholder="birth year" name="birthYear" />
+				<input type="text" class="form-control" placeholder="birth year" name="birthYear" value="@Model.BirthYear" />
 			</div>
 			<div class="form-group">
 				<label for="state">state</label>
-				<input type="text" class="form-control" placeholder="state" name="state" />
+				<select class="form-control" name="state">
+					@foreach (var state in this.Model.States)
+					{
+						if (this.Model.Location != null && string.Equals(state.Trim(),this.Model.Location.Trim(), StringComparison.OrdinalIgnoreCase))
+						{
+							<option selected="selected" value="@state">@state</option>
+						}
+						else
+						{
+							<option value="@state">@state</option>
+						}
+					}
+				</select>
 			</div>
 			<div class="form-group">
 				<label for="previousCpts">previous cpts</label>
-				<input type="text" class="form-control" placeholder="previous cpts (comma separated, blank for none)" name="previousCpts" />
+				<input type="text" class="form-control" placeholder="previous cpts (comma separated - 70121, 42801, 85606, 42809)" name="previousCpts" value="@Model.CptCodes" />
 			</div>
 			<div class="form-group">
 				<button class="btn btn-default" type="submit">query</button>

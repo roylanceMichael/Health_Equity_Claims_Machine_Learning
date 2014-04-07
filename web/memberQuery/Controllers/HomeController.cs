@@ -30,12 +30,18 @@
 				}
 
 				var queryResults = new QueryResultsBuilder(this.connectionString, birthYear, state, previousCpts).Build();
+				queryResults.BirthYear = birthYear;
+				queryResults.Location = state;
+				queryResults.CptCodes = previousCpts;
 				cacheRepository.CacheQueryResults(birthYear, state, previousCpts, queryResults);
 				return this.View(queryResults);
 			}
 
 			return this.View(new QueryResults
 				                 {
+													 BirthYear = birthYear,
+													 CptCodes = previousCpts,
+													 Location = state,
 					                 Results = new TransitionPredictions(new List<TransitionEmissions>())
 				                 });
 		}

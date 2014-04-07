@@ -38,9 +38,9 @@
 			previousCpts.CheckIfArgNull("previousCpts");
 
 			this.connectionString = connectionString;
-			this.birthYear = birthYear;
-			this.state = state;
-			this.previousCpts = previousCpts;
+			this.birthYear = birthYear.Trim();
+			this.state = state.Trim();
+			this.previousCpts = previousCpts.Trim();
 		}
 
 		public QueryResults Build()
