@@ -26,7 +26,7 @@
 
 			return this.View(new QueryResults
 				                 {
-					                 Results = new Dictionary<TransitionRecord, List<EmissionRecord>>()
+					                 Results = new TransitionPredictions(new List<TransitionEmissions>())
 				                 });
 		}
 

@@ -39,48 +39,57 @@
 	</div>
 
 	<div class="row">
+		<div class="col-lg-12">
+			<table class="table-condensed">
+				<tbody>
+					<tr>
+						<th>Suggested Amount</th>
+						<td>@Model.Results.MinimumSuggestedAmount</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+
+	<div class="row">
 		@{
-			foreach (var kvp in this.Model.Results.OrderByDescending(pair => pair.Key.Probability))
-			{
-			<div class="col-lg-4">
+			<div class="col-lg-12">
 				<table class="table-condensed">
 					<thead>
 						<tr>
 							<th>From</th>
 							<th>To</th>
 							<th>Probability</th>
+							<th>Emission</th>
+							<th>Expected Value</th>
+							<th>Highest Probability</th>
+							<th>Lowest Probability</th>
+							<th>Standard Deviation</th>
+							<th>Min Amount</th>
+							<th>Max Amount</th>
+							<th>Average Amount</th>
 						</tr>
 					</thead>
 					<tbody>
-						<tr>
-							<td>@kvp.Key.FromTransition</td>
-							<td>@kvp.Key.ToTransition</td>
-							<td>@kvp.Key.Probability</td>
-						</tr>
-					</tbody>
-				</table>
-			</div>
-			
-			<div class="col-lg-8">
-				<table class="table-condensed">
-					<thead>
-						<tr>
-							<th>Amount</th>
-							<th>Probability</th>
-						</tr>
-					</thead>
-					<tbody>
-						@foreach (var emission in kvp.Value.OrderByDescending(record => record.Probability))
+						@foreach (var transitionEmission in this.Model.Results.TransitionEmissions)
 			{
 							<tr>
-								<td>@emission.TotalAmount</td>
-								<td>@emission.Probability</td>
+								<td>@transitionEmission.FromTransition</td>
+								<td>@transitionEmission.ToTransition</td>
+								<td>@transitionEmission.Probability</td>
+								<td>@transitionEmission.Emission</td>
+								<td>@transitionEmission.ExpectedValue</td>
+								<td>@transitionEmission.HighestProbabilityAmount</td>
+								<td>@transitionEmission.LowestProbabilityAmount</td>
+								<td>@transitionEmission.StandardDeviation</td>
+								<td>@transitionEmission.MinAmount</td>
+								<td>@transitionEmission.MaxAmount</td>
+								<td>@transitionEmission.AverageAmount</td>
 							</tr>
 			}
 					</tbody>
 				</table>
-			</div>
-			}					
+			</div>		
 		}
 	</div>
 </div>

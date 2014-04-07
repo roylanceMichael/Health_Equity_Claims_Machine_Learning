@@ -4,7 +4,9 @@
 
 	public static class StringUtils
 	{
-		public static void CheckIfArgNull(this string argument, string argumentName)
+		public const string StartState = "START_STATE";
+
+		public static void CheckIfArgNull(this object argument, string argumentName)
 		{
 			if (argument == null)
 			{

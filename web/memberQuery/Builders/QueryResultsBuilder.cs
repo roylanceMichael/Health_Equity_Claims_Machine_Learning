@@ -75,7 +75,7 @@
 
 				var fromTransition = this.GetAge() + "_" + this.state + lastCcsCode;
 
-				var transitionRecords = new Dictionary<TransitionRecord, List<EmissionRecord>>();
+				var transitionRecords = new HashSet<TransitionRecord>();
 				using (var command = new SqlCommand(TransitionRecordSql, connection))
 				{
 					command.Parameters.AddWithValue(FromCptCodeParam, fromTransition);
@@ -84,30 +84,35 @@
 
 					while (reader.Read())
 					{
-						transitionRecords[TransitionRecord.Factory(reader)] = new List<EmissionRecord>();
+						transitionRecords.Add(TransitionRecord.Factory(reader));
 					}
 
 					reader.Close();
 				}
 
-				foreach (var kvp in transitionRecords)
+				var transitionEmissions = new HashSet<TransitionEmissions>();
+
+				foreach (var transitionRecord in transitionRecords)
 				{
-					var emission = kvp.Key.FromTransition + "_" + kvp.Key.ToTransition;
+					var emissionKey = transitionRecord.FromTransition + "_" + transitionRecord.ToTransition;
 					using (var command = new SqlCommand(EmissionRecordSql, connection))
 					{
-						command.Parameters.AddWithValue(EmissionCptCodeParam, emission);
+						command.Parameters.AddWithValue(EmissionCptCodeParam, emissionKey);
 
 						var reader = command.ExecuteReader();
+						var emissions = new List<EmissionRecord>();
 						while (reader.Read())
 						{
-							kvp.Value.Add(EmissionRecord.Factory(reader));
+							emissions.Add(EmissionRecord.Factory(reader));
 						}
 
+						var transitionEmission = new TransitionEmissions(transitionRecord, emissions);
+						transitionEmissions.Add(transitionEmission);
 						reader.Close();
 					}
 				}
 
-				return new QueryResults { Results = transitionRecords };
+				return new QueryResults { Results = new TransitionPredictions(transitionEmissions) };
 			}
 		}
 
