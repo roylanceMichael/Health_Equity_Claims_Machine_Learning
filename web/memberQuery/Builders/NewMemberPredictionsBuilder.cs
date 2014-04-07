@@ -9,9 +9,21 @@
 	public class NewMemberPredictionsBuilder : IBuilder<IEnumerable<NewMemberBalancePrediction>>
 	{
 		private const string NewMemberPredictionsSql = @"select 
-top 1000 NewMemberID, DependentID, BirthYear, State, max(LastCPTCode), CachedBalance, RecommendedBalance, SufficientAmount, ServiceEnd 
-from [dbo].[NewMemberBalancePredictions] 
-group by NewMemberID, DependentID, BirthYear, State, CachedBalance, RecommendedBalance, SufficientAmount, ServiceEnd
+distinct top 1000 p.NewMemberID, p.DependentID, BirthYear, State, max(LastCPTCode), CachedBalance, RecommendedBalance, SufficientAmount, ServiceEnd 
+from [dbo].[NewMemberBalancePredictions] p, 
+(select NewMemberID, NewID 
+from (
+select 
+NewMemberID, MIN(NewID) as NewID
+from [dbo].[NewMemberBalancePredictions]
+group by newmemberid having count(*) > 1
+union
+select 
+NewMemberID, MIN(NewID) as NewID
+from [dbo].[NewMemberBalancePredictions]
+group by newmemberid having count(*) = 1 ) b) d
+where p.NewID = d.NewID
+group by p.NewMemberID, p.DependentID, BirthYear, State, CachedBalance, RecommendedBalance, SufficientAmount, ServiceEnd
 order by RecommendedBalance desc";
 
 		private readonly string connectionString;
