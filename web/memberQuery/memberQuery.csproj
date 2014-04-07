@@ -110,6 +110,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Builders\IBuilder.cs" />
+    <Compile Include="Builders\NewMemberPredictionsBuilder.cs" />
     <Compile Include="Builders\PredictResultsBuilder.cs" />
     <Compile Include="Builders\QueryResultsBuilder.cs" />
     <Compile Include="Controllers\HomeController.cs" />
@@ -118,6 +119,7 @@
     </Compile>
     <Compile Include="Models\CacheRepository.cs" />
     <Compile Include="Models\EmissionRecord.cs" />
+    <Compile Include="Models\NewMemberBalancePrediction.cs" />
     <Compile Include="Models\PredictResult.cs" />
     <Compile Include="Models\PredictResults.cs" />
     <Compile Include="Models\QueryResults.cs" />
@@ -162,6 +164,7 @@
     <Content Include="Scripts\jquery-2.1.0.min.map" />
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Home\PredictResults.cshtml" />
+    <Content Include="Views\Home\NewMemberPredictions.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

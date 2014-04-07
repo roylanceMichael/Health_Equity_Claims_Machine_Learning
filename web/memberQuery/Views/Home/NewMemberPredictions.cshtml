@@ -1,0 +1,50 @@
+﻿@model IEnumerable<MemberQuery.Models.NewMemberBalancePrediction>
+<div class="navbar navbar-inverse navbar-fixed-top">
+	<div class="container">
+		<div class="navbar-collapse collapse">
+			<ul class="nav navbar-nav">
+				<li><a href="@Url.Action("Index", "Home")">Home</a></li>
+				<li class="active"><a href="@Url.Action("NewMemberPredictions", "Home")">Member Cache Balance Predictions</a></li>
+				<li><a href="@Url.Action("PredictResults", "Home")">Gold Training Predictions</a></li>
+			</ul>
+		</div>
+	</div>
+</div>
+
+<div class="container" role="main">
+	@{
+		<div class="row">
+			<div class="col-lg-12">
+				<table class="table-condensed">
+					<thead>
+						<tr>
+							<th>MemberID</th>
+							<th>DependentID</th>
+							<th>Birth Year</th>
+							<th>State</th>
+							<th>Last CPT Code</th>
+							<th>Cached Balance</th>
+							<th>Recommended Balance</th>
+							<th>Sufficient Amount</th>
+						</tr>
+					</thead>
+					<tbody>
+						@foreach (var result in this.Model)
+			{
+							<tr>
+								<td>@result.NewMemberId</td>
+								<td>@result.DependentId</td>
+								<td>@result.BirthYear</td>
+								<td>@result.State</td>
+								<td>@result.LastCptCode</td>
+								<td>$@result.CachedBalance</td>
+								<td>$@result.RecommendedBalance</td>
+								<td>@(result.SufficientAmount == 1 ? "Yes" : "No")</td>
+							</tr>
+			}
+					</tbody>
+				</table>
+			</div>
+		</div>	
+	}
+</div>

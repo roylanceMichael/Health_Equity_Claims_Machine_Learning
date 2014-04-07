@@ -44,5 +44,10 @@
 		{
 			return this.View(new PredictResults(new PredictResultsBuilder(this.connectionString).Build().ToList()));
 		}
+
+		public ActionResult NewMemberPredictions()
+		{
+			return this.View(new NewMemberPredictionsBuilder(this.connectionString).Build());
+		}
 	}
 }
