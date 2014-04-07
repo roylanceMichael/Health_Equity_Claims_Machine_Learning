@@ -3,21 +3,18 @@
 	using System.Collections.Generic;
 	using System.Linq;
 
-	using MemberQuery.Resources;
-
 	public class TransitionPredictions
 	{
-		private readonly IEnumerable<TransitionEmissions> transitionEmissions;
-
-		private readonly double minimumSuggestedAmount;
-
 		public TransitionPredictions(IEnumerable<TransitionEmissions> transitionEmissions)
 		{
-			transitionEmissions.CheckIfArgNull("transitionEmissions");
+			if (transitionEmissions == null)
+			{
+				return;
+			}
 
-			this.transitionEmissions = transitionEmissions.OrderByDescending(emissions => emissions.Probability);
+			this.TransitionEmissions = transitionEmissions.OrderByDescending(emissions => emissions.Probability);
 
-			if (!this.transitionEmissions.Any())
+			if (!this.TransitionEmissions.Any())
 			{
 				return;
 			}
@@ -29,30 +26,18 @@
 			var i = 0;
 			while (runningProbability < 0.5)
 			{
-				var transitionEmission = this.transitionEmissions.ElementAt(i);
+				var transitionEmission = this.TransitionEmissions.ElementAt(i);
 				expectedAmounts.Add(transitionEmission.ExpectedValue);
 				standardDeviations.Add(transitionEmission.StandardDeviation);
 				runningProbability += transitionEmission.Probability;
 				i++;
 			}
 
-			this.minimumSuggestedAmount = expectedAmounts.Average() + standardDeviations.Average();
+			this.MinimumSuggestedAmount = expectedAmounts.Average() + standardDeviations.Average();
 		}
 
-		public IEnumerable<TransitionEmissions> TransitionEmissions
-		{
-			get
-			{
-				return this.transitionEmissions;
-			}
-		}
+		public IEnumerable<TransitionEmissions> TransitionEmissions { get; set; }
 
-		public double MinimumSuggestedAmount
-		{
-			get
-			{
-				return this.minimumSuggestedAmount;
-			}
-		}
+		public double MinimumSuggestedAmount { get; set; }
 	}
 }

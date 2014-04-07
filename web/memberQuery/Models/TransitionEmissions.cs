@@ -8,122 +8,49 @@
 
 	public class TransitionEmissions
 	{
-		private readonly TransitionRecord transitionRecord;
-
 		private readonly IEnumerable<EmissionRecord> emissionRecords;
 
-		private readonly double expectedValue;
-
-		private readonly double standardDeviation;
-
-		private readonly double minAmount;
-
-		private readonly double maxAmount;
-
-		private readonly double averageAmount;
- 
 		public TransitionEmissions(TransitionRecord transitionRecord, IEnumerable<EmissionRecord> emissionRecords)
 		{
-			this.transitionRecord = transitionRecord;
-			if (!emissionRecords.Any())
+			if (transitionRecord == null || emissionRecords == null)
 			{
-				throw new InvalidOperationException("emissions need to have more than one value");
+				return;
 			}
 
+			this.FromTransition = transitionRecord.FromTransition;
+			this.ToTransition = transitionRecord.ToTransition;
+			this.Probability = transitionRecord.Probability;
 			this.emissionRecords = emissionRecords.OrderByDescending(record => record.Probability);
-			this.expectedValue = this.emissionRecords.Sum(record => record.Probability * record.TotalAmount);
-			this.standardDeviation = this.emissionRecords.Select(record => record.TotalAmount).StdDev();
-			this.minAmount = this.emissionRecords.Min(record => record.TotalAmount);
-			this.maxAmount = this.emissionRecords.Max(record => record.TotalAmount);
-			this.averageAmount = this.emissionRecords.Average(record => record.TotalAmount);
+			this.Emission = this.emissionRecords.First().CptCode;
+			this.ExpectedValue = this.emissionRecords.Sum(record => record.Probability * record.TotalAmount);
+			this.StandardDeviation = this.emissionRecords.Select(record => record.TotalAmount).StdDev();
+			this.HighestProbabilityAmount = this.emissionRecords.First().TotalAmount;
+			this.LowestProbabilityAmount = this.emissionRecords.Last().TotalAmount;
+			this.MinAmount = this.emissionRecords.Min(record => record.TotalAmount);
+			this.MaxAmount = this.emissionRecords.Max(record => record.TotalAmount);
+			this.AverageAmount = this.emissionRecords.Average(record => record.TotalAmount);
 		}
 
-		public string FromTransition
-		{
-			get
-			{
-				return this.transitionRecord.FromTransition;
-			}
-		}
+		public string FromTransition { get; set; }
 
-		public string ToTransition
-		{
-			get
-			{
-				return this.transitionRecord.ToTransition;
-			}
-		}
+		public string ToTransition { get; set; }
 
-		public double Probability
-		{
-			get
-			{
-				return this.transitionRecord.Probability;
-			}
-		}
+		public double Probability { get; set; }
 
-		public string Emission
-		{
-			get
-			{
-				return this.emissionRecords.First().CptCode;
-			}
-		}
+		public string Emission { get; set; }
 
-		public double ExpectedValue
-		{
-			get
-			{
-				return this.expectedValue;
-			}
-		}
+		public double ExpectedValue { get; set; }
 
-		public double HighestProbabilityAmount
-		{
-			get
-			{
-				return this.emissionRecords.First().TotalAmount;
-			}
-		}
+		public double HighestProbabilityAmount { get; set; }
 
-		public double LowestProbabilityAmount
-		{
-			get
-			{
-				return this.emissionRecords.Last().TotalAmount;
-			}
-		}
+		public double LowestProbabilityAmount { get; set; }
 
-		public double StandardDeviation
-		{
-			get
-			{
-				return this.standardDeviation;
-			}
-		}
+		public double StandardDeviation { get; set; }
 
-		public double MinAmount
-		{
-			get
-			{
-				return this.minAmount;
-			}
-		}
+		public double MinAmount { get; set; }
 
-		public double MaxAmount
-		{
-			get
-			{
-				return this.maxAmount;
-			}
-		}
+		public double MaxAmount { get; set; }
 
-		public double AverageAmount
-		{
-			get
-			{
-				return this.averageAmount;
-			}
-		}
+		public double AverageAmount { get; set; }
 	}
 }

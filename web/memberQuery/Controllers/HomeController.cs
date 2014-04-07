@@ -21,7 +21,17 @@
 		{
 			if (!string.IsNullOrWhiteSpace(birthYear))
 			{
-				return this.View(new QueryResultsBuilder(this.connectionString, birthYear, state, previousCpts).Build());
+				var cacheRepository = new CacheRepository(this.connectionString);
+				var results = cacheRepository.GetQueryResults(birthYear, state, previousCpts);
+
+				if (results != null)
+				{
+					return this.View(results);
+				}
+
+				var queryResults = new QueryResultsBuilder(this.connectionString, birthYear, state, previousCpts).Build();
+				cacheRepository.CacheQueryResults(birthYear, state, previousCpts, queryResults);
+				return this.View(queryResults);
 			}
 
 			return this.View(new QueryResults

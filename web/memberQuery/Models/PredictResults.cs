@@ -6,10 +6,15 @@
 
 	public class PredictResults
 	{
-		private readonly IList<PredictResult> predictResults;
+		private IEnumerable<PredictResult> predictResults;
  
 		public PredictResults(IEnumerable<PredictResult> predictResults)
 		{
+			if (predictResults == null)
+			{
+				return;
+			}
+
 			this.predictResults = predictResults.ToList();
 
 			this.GoldToExpectedAverageVariation =
@@ -32,6 +37,11 @@
 			get
 			{
 				return this.predictResults;
+			}
+
+			set
+			{
+				this.predictResults = value;
 			}
 		}
 
