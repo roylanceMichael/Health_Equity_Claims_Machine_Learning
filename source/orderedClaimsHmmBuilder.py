@@ -92,7 +92,7 @@ class OrderedClaimsHmmBuilder:
 			currentCptCode = self.createCurrentState(previousCptCode, rawCode, row, buildType)
 			unfilteredCptCode = self.createRxState(previousCptCode, rawCode)
 
-			patientAmount = float(row[5])
+			patientAmount = float(row[4])
 			totalAmount = str(patientAmount)
 
 			if rowMemberId != currentMemberId or dependentId != currentDependentId:
