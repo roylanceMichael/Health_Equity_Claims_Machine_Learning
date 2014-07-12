@@ -31,14 +31,22 @@ emissionDictionary = {}
 
 # fileStream.close()
 
-def mapDict(row):
-    transition = row[3] + "_" + row[6] + "_" + row[7]
-    
-    return (transition, 1)
+def mapTransition(row):
+    columns = row.split(',')
+    currentKey = columns[3] + "_" + columns[6] + "_" + columns[7]
+    previousKey = columns[11] + "_" + columns[14] + "_" + columns[15]
 
+    return ((previousKey, currentKey), 1)
+
+def reduceTransition(firstRow, secondRow):
+    print firstRow
+    print secondRow
+    print '-----------'
+    return (firstRow[0], firstRow[1] + firstRow[1])
 
 sc = SparkContext("local", "Healthcare Hidden Markov Models")
-executeMe = sc.textFile(claimDataLocation).map(mapDict)
+executeMe = sc.textFile(claimDataLocation).map(mapTransition).reduce(reduceTransition)
+print executeMe
 
 def printMe(r):
     print r
