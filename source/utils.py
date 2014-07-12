@@ -1,5 +1,5 @@
 import zipfile
-import mysql.connector
+# import mysql.connector
 import csv as csv
 import os.path
 import json
@@ -116,92 +116,3 @@ def createMarkovDictFromCsv(fileName):
 			markovDict[key] = { subkey: probability }
 
 	return markovDict
-
-def savePredictResult(predictResult):
-	cnx = mysql.connector.connect(user='admin', 
-								password='onetwotree',
-								host='192.168.1.5',
-								database='healthequity')
-	
-	cursor = cnx.cursor(buffered=True)
-	resultTuple = (predictResult[0], predictResult[1], predictResult[2], predictResult[3], predictResult[4], predictResult[5])
-	cursor.execute(predictResultInsertStatement, resultTuple)
-
-	cnx.commit()
-	cnx.close()
-
-def saveClaimDetailDependent():
-	cnx = mysql.connector.connect(
-								user='', 
-								password='',
-								host='',
-								database='')
-
-	cursor = cnx.cursor(buffered=True)
-
-	cursor.execute(selectClaimDetailDependent)
-
-	open_file_object = csv.writer(open("ClaimDetailDependent.csv", "wb"))
-
-	for row in cursor:
-		open_file_object.writerow([row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7]])
-
-	cnx.close()
-
-def loadClaimData(claimFileName, cptToCssDict):
-	# load in the csv file
-	csv_file_object = csv.reader(open(claimFileName, 'rb'))
-
-	cnx = mysql.connector.connect(
-								user='', 
-								password='',
-								host='',
-								database='')
-
-	cursor = cnx.cursor(buffered=True)
-
-	# don't set autocommit, it'll make us go a lot slower
-	cursor.execute('SET autocommit = 0')
-	cnx.commit()
-	
-	curIter = 0
-	maxIter = 10000
-
-	values = []
-
-	for row in csv_file_object:
-		memberId = re.sub("[^0-9]", "", str.strip(row[0])) 
-		dependentId = re.sub("[^0-9]", "", str.strip(row[1])) 
-		cptCode = str.strip(row[2])
-		ccsCode = cptCode
-
-		if cptToCssDict.has_key(cptCode):
-			ccsCode = cptToCssDict[cptCode]
-
-		patientAmount = float(str.strip(row[3]))
-		totalAmount = float(str.strip(row[4]))
-		gender = str.strip(row[7])
-
-		year = str.strip(row[6])
-		try:
-			year = int(year)
-		except:
-			# skipping records that don't have birth year, will throw off data
-			continue
-
-		insertTuple = (memberId, dependentId, cptCode, ccsCode, patientAmount, totalAmount, year, gender)
-		# print insertTuple
-		values.append(insertTuple)
-		curIter = curIter + 1
-
-		if curIter > maxIter:
-			cursor.executemany(recordInsertStatement, values)
-			print 'committed ' + str(curIter)
-			cnx.commit()
-			curIter = 0
-			del values[:]
-
-	cursor.executemany(recordInsertStatement, values)
-	del values[:]
-	cnx.commit()
-	cnx.close()
