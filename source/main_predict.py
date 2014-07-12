@@ -9,19 +9,19 @@ def main():
 	emissions = {}
 	goldFiles = {}
 
-	outputFile = "predict.csv"
-	outputFileGranular = "granular.csv"
-	outputFileTrans = "trans.csv"
+	outputFile = "results/predict.csv"
+	outputFileGranular = "results/granular.csv"
+	outputFileTrans = "results/trans.csv"
 
-	filteringType = utils.ageLocation
+	filteringType = utils.ageGender
 
 	# for filteringType in utils.filteringTypes:
 	print "reading train, emission, and gold path from %s" % (filteringType)
 	# file names
-	trainTransitionsOutputFileName = "transformed/%sTrainTransitions.csv" % (filteringType)
-	testTransitionsOutputFileName = "transformed/%sTestTransitions.csv" % (filteringType)
-	emissionsOutputFileName = "transformed/%sEmissions.csv" % (filteringType)
-	goldFilePath = "transformed/%sGoldStandard.json" % (filteringType)
+	trainTransitionsOutputFileName = "buildResults/%sTrainTransitions.csv" % (filteringType)
+	testTransitionsOutputFileName = "buildResults/%sTestTransitions.csv" % (filteringType)
+	emissionsOutputFileName = "buildResults/%sEmissions.csv" % (filteringType)
+	goldFilePath = "buildResults/%sGoldStandard.json" % (filteringType)
 	
 	# convert to dictionaries
 	trainTransitions[filteringType] = utils.createMarkovDictFromCsv(trainTransitionsOutputFileName)
@@ -40,6 +40,7 @@ def main():
 	goldFileDict = goldFiles[filteringType]
 	
 	for key in goldFileDict:
+		print "processing key %s" % (key)
 		for output in predictCpt.goldFileCheck(goldFileDict[key], trainTransitions[filteringType], emissions[filteringType], filteringType):
 			fileStream.writerow(output)
 

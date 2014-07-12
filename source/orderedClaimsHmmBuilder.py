@@ -5,8 +5,9 @@ import random
 import utils
 
 class OrderedClaimsHmmBuilder:
-	def __init__(self, fileName, useCpt=False, setSplit=0.98):
+	def __init__(self, fileName, cptDict, useCpt=False, setSplit=0.98):
 		self.fileName = fileName
+		self.cptDict = cptDict
 		self.setSplit = setSplit
 		self.useCpt = useCpt
 
@@ -55,7 +56,7 @@ class OrderedClaimsHmmBuilder:
 		if rxState != currentState:
 			return rxState
 
-		return utils.buildTransition(buildType, row[7], row[6], row[8], row[9]) + currentState
+		return utils.buildTransition(buildType, row[7], row[6], '', '') + currentState
 
 	def build(self, buildType):
 		csv_file_object = csv.reader(open(self.fileName, 'rb'))
@@ -85,9 +86,10 @@ class OrderedClaimsHmmBuilder:
 		for row in csv_file_object:
 			rowMemberId = row[0]
 			dependentId = row[1]
-			rawCode = row[3]
-			if self.useCpt:
-				rawCode = row[2]
+			rawCode = row[2]
+
+			if self.useCpt == False and self.cptDict.has_key(rawCode):
+				rawCode = self.cptDict[rawCode]
 
 			currentCptCode = self.createCurrentState(previousCptCode, rawCode, row, buildType)
 			unfilteredCptCode = self.createRxState(previousCptCode, rawCode)

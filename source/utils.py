@@ -1,7 +1,9 @@
 import zipfile
+import mysql.connector
 import csv as csv
 import os.path
 import json
+import re
 import time
 
 configFile = "config.json"
@@ -15,9 +17,12 @@ genderOnly = "genderOnly"
 ageGender = "ageGender"
 ageLocation = "ageLocation"
 
+recordInsertStatement = ("insert into healthequity.claimdetaildependent (MemberId, DependentId, CptCode, CcsCode, PatientAmount, TotalAmount, Year, Gender) "
+				"values (%s, %s, %s, %s, %s, %s, %s, %s)")
+
 currentYear = int(time.strftime("%Y"))
 
-filteringTypes = [noFiltering, ageOnly, genderOnly, ageGender]
+filteringTypes = [noFiltering, ageOnly, genderOnly, ageGender, ageLocation]
 
 def buildTransition(filterOption, gender, birthYear, zip, state):
 	if filterOption == noFiltering:
@@ -94,3 +99,59 @@ def createMarkovDictFromCsv(fileName):
 			markovDict[key] = { subkey: probability }
 
 	return markovDict
+
+def loadClaimData(claimFileName, cptToCssDict):
+	# load in the csv file
+	csv_file_object = csv.reader(open(claimFileName, 'rb'))
+
+	cnx = mysql.connector.connect(
+								user='admin', 
+								password='onetwotree',
+								host='192.168.1.5',
+								database='healthequity')
+
+	cursor = cnx.cursor(buffered=True)
+
+	curIter = 0
+	maxIter = 500
+
+	for row in csv_file_object:
+		memberId = re.sub("[^0-9]", "", str.strip(row[0])) 
+		dependentId = re.sub("[^0-9]", "", str.strip(row[1])) 
+		cptCode = str.strip(row[2])
+		ccsCode = cptCode
+
+		if cptToCssDict.has_key(cptCode):
+			ccsCode = cptToCssDict[cptCode]
+
+		patientAmount = float(str.strip(row[3]))
+		totalAmount = float(str.strip(row[4]))
+		gender = str.strip(row[7])
+
+		year = str.strip(row[6])
+		try:
+			year = int(year)
+		except:
+			# skipping records that don't have birth year, will throw off data
+			continue
+
+		insertTuple = (memberId, dependentId, cptCode, ccsCode, patientAmount, totalAmount, year, gender)
+		print insertTuple
+		cursor.execute(recordInsertStatement, insertTuple)
+		curIter = curIter + 1
+
+		if curIter > maxIter:
+			cnx.commit()
+			curIter = 0
+
+	cnx.commit()
+	cnx.close()
+
+
+
+
+
+
+
+
+
