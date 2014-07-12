@@ -1,3 +1,4 @@
 #! /bin/bash
-sudo rm -r transformed/CountResults
+sudo rm -r sparkResults
+mkdir sparkResults
 spark-submit spark/main.py
