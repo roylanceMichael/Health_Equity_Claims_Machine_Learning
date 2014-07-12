@@ -20,6 +20,20 @@ ageLocation = "ageLocation"
 recordInsertStatement = ("insert into healthequity.claimdetaildependent (MemberId, DependentId, CptCode, CcsCode, PatientAmount, TotalAmount, Year, Gender) "
 				"values (%s, %s, %s, %s, %s, %s, %s, %s)")
 
+selectClaimDetailDependent = """
+	select
+		MemberId,
+		DependentId, 
+		CptCode,
+		CcsCode,
+		PatientAmount,
+		TotalAmount,
+		Year,
+		Gender
+	from ClaimDetailDependent
+	order by MemberId asc, DependentId asc
+"""
+
 currentYear = int(time.strftime("%Y"))
 
 filteringTypes = [noFiltering, ageOnly, genderOnly, ageGender, ageLocation]
@@ -100,6 +114,24 @@ def createMarkovDictFromCsv(fileName):
 
 	return markovDict
 
+def saveClaimDetailDependent():
+	cnx = mysql.connector.connect(
+								user='admin', 
+								password='onetwotree',
+								host='192.168.1.5',
+								database='healthequity')
+
+	cursor = cnx.cursor(buffered=True)
+
+	cursor.execute(selectClaimDetailDependent)
+
+	open_file_object = csv.writer(open("ClaimDetailDependent.csv", "wb"))
+
+	for row in cursor:
+		open_file_object.writerow([row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7]])
+
+	cnx.close()
+
 def loadClaimData(claimFileName, cptToCssDict):
 	# load in the csv file
 	csv_file_object = csv.reader(open(claimFileName, 'rb'))
@@ -112,8 +144,14 @@ def loadClaimData(claimFileName, cptToCssDict):
 
 	cursor = cnx.cursor(buffered=True)
 
+	# don't set autocommit, it'll make us go a lot slower
+	cursor.execute('SET autocommit = 0')
+	cnx.commit()
+	
 	curIter = 0
-	maxIter = 500
+	maxIter = 10000
+
+	values = []
 
 	for row in csv_file_object:
 		memberId = re.sub("[^0-9]", "", str.strip(row[0])) 
@@ -136,22 +174,18 @@ def loadClaimData(claimFileName, cptToCssDict):
 			continue
 
 		insertTuple = (memberId, dependentId, cptCode, ccsCode, patientAmount, totalAmount, year, gender)
-		print insertTuple
-		cursor.execute(recordInsertStatement, insertTuple)
+		# print insertTuple
+		values.append(insertTuple)
 		curIter = curIter + 1
 
 		if curIter > maxIter:
+			cursor.executemany(recordInsertStatement, values)
+			print 'committed ' + str(curIter)
 			cnx.commit()
 			curIter = 0
+			del values[:]
 
+	cursor.executemany(recordInsertStatement, values)
+	del values[:]
 	cnx.commit()
 	cnx.close()
-
-
-
-
-
-
-
-
-

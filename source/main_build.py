@@ -24,8 +24,9 @@ def main():
 	cptDict = cptToCcs.createCptToCcsDictionary()
 
 	# get the build
-	utils.loadClaimData(claimsDetailsOrderedMemberIDDateFile, cptDict)
-	
+	# utils.loadClaimData(claimsDetailsOrderedMemberIDDateFile, cptDict)
+	utils.saveClaimDetailDependent()
+
 	return
 	builder = orderedClaimsHmmBuilder.OrderedClaimsHmmBuilder(claimsDetailsOrderedMemberIDDateFile, cptDict)
 
