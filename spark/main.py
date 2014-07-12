@@ -2,7 +2,6 @@ import os
 from sklearn import metrics
 from pyspark import SparkContext
 
-
 currentDir = os.getcwd()
 countResultsDir = "/sparkResults"
 claimDataLocation = currentDir + "/transformed/Example.csv"
@@ -32,24 +31,19 @@ emissionDictionary = {}
 
 # fileStream.close()
 
+def mapDict(row):
+    transition = row[3] + "_" + row[6] + "_" + row[7]
+    
+    return (transition, 1)
 
-if __name__ == "__main__":
-    def myFunc(s):
-        words = s.split(" ")
-        filestream = open('test.txt', 'w')
-        filestream.write("hello world")
-        filestream.close()
-        return len(words)
 
-    currentDir = os.getcwd()
-    countResultsDir = "/sparkResults"
-    claimDataLocation = currentDir + "/transformed/Example.csv"
-    sc = SparkContext("local", "Healthcare Hidden Markov Models")
-    executeMe = sc.textFile(claimDataLocation).map(myFunc)
+sc = SparkContext("local", "Healthcare Hidden Markov Models")
+executeMe = sc.textFile(claimDataLocation).map(mapDict)
 
-    def printMe(r):
-        print r
-    executeMe.foreach(printMe)
+def printMe(r):
+    print r
+    
+executeMe.foreach(printMe)
 
 
 
