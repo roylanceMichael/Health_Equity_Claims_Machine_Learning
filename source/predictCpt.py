@@ -18,6 +18,7 @@ def predictTrans(goldFileList, transitionDictionary, emissionDictionary, filterO
 			yield [previous, current, highestProbNext, transitionDictionary[previous][current], transitionDictionary[previous][highestProbNext], (current == highestProbNext)]
 			previous = current
 		else:
+			break
 			yield [previous, current, "error", "error", "error", "error"]
 
 def predictNextState(goldFileList, transitionDictionary, emissionDictionary, filterOption):
@@ -90,7 +91,7 @@ def goldFileCheck(goldFileList, transitionDictionary, emissionDictionary, filter
 
 		totalErrors = totalErrors + 1
 		foundError = True
-		yield ["%s %s" % (previous, current), "Error", "Error", "Error", "Error", "Error"]
+		# yield ["%s %s" % (previous, current), "Error", "Error", "Error", "Error", "Error"]
 		break
 
 	# don't report if there was an error...

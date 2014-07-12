@@ -34,6 +34,9 @@ selectClaimDetailDependent = """
 	order by MemberId asc, DependentId asc
 """
 
+predictResultInsertStatement = ("insert into healthequity.predictresults (Path, ExpectedAmount, GoldAmount, TrainAmount, TrainLowest, TrainHighest) "
+				"values (%s, %s, %s, %s, %s, %s)")
+
 currentYear = int(time.strftime("%Y"))
 
 filteringTypes = [noFiltering, ageOnly, genderOnly, ageGender, ageLocation]
@@ -114,12 +117,26 @@ def createMarkovDictFromCsv(fileName):
 
 	return markovDict
 
+def savePredictResult(predictResult):
+	cnx = mysql.connector.connect(
+								user='', 
+								password='',
+								host='',
+								database='')
+	
+	cursor = cnx.cursor(buffered=True)
+	resultTuple = (predictResult[0], predictResult[1], predictResult[2], predictResult[3], predictResult[4], predictResult[5])
+	cursor.execute(predictResultInsertStatement, resultTuple)
+
+	cnx.commit()
+	cnx.close()
+
 def saveClaimDetailDependent():
 	cnx = mysql.connector.connect(
-								user='admin', 
-								password='onetwotree',
-								host='192.168.1.5',
-								database='healthequity')
+								user='', 
+								password='',
+								host='',
+								database='')
 
 	cursor = cnx.cursor(buffered=True)
 
@@ -137,10 +154,10 @@ def loadClaimData(claimFileName, cptToCssDict):
 	csv_file_object = csv.reader(open(claimFileName, 'rb'))
 
 	cnx = mysql.connector.connect(
-								user='admin', 
-								password='onetwotree',
-								host='192.168.1.5',
-								database='healthequity')
+								user='', 
+								password='',
+								host='',
+								database='')
 
 	cursor = cnx.cursor(buffered=True)
 

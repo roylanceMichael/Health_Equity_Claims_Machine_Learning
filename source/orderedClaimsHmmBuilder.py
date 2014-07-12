@@ -86,10 +86,7 @@ class OrderedClaimsHmmBuilder:
 		for row in csv_file_object:
 			rowMemberId = row[0]
 			dependentId = row[1]
-			rawCode = row[2]
-
-			if self.useCpt == False and self.cptDict.has_key(rawCode):
-				rawCode = self.cptDict[rawCode]
+			rawCode = row[3]
 
 			currentCptCode = self.createCurrentState(previousCptCode, rawCode, row, buildType)
 			unfilteredCptCode = self.createRxState(previousCptCode, rawCode)
@@ -111,7 +108,7 @@ class OrderedClaimsHmmBuilder:
 
 				if isTest:
 					goldStandard[rowMemberId + dependentId] = [(startState, 0)]
-					goldStandard[rowMemberId + dependentId].append((unfilteredCptCode, totalAmount, row[6], row[7], row[8], row[9]))
+					goldStandard[rowMemberId + dependentId].append((unfilteredCptCode, totalAmount, row[6], row[7], '', ''))
 				
 				currentMemberId = rowMemberId
 				currentDependentId = dependentId
@@ -122,7 +119,7 @@ class OrderedClaimsHmmBuilder:
 			self.setDict(emissions, previousCptCode + "_" + currentCptCode, totalAmount)
 			
 			if isTest:
-				goldStandard[rowMemberId + dependentId].append((unfilteredCptCode, totalAmount, row[6], row[7], row[8], row[9]))
+				goldStandard[rowMemberId + dependentId].append((unfilteredCptCode, totalAmount, row[6], row[7], '', ''))
 
 			previousCptCode = currentCptCode
 

@@ -23,11 +23,11 @@ def main():
 	print "buildint cptToCss dictionary - if needed"
 	cptDict = cptToCcs.createCptToCcsDictionary()
 
-	# get the build
+	# uncomment these if we need to upload the data to the database again
 	# utils.loadClaimData(claimsDetailsOrderedMemberIDDateFile, cptDict)
-	utils.saveClaimDetailDependent()
+	# utils.saveClaimDetailDependent()
 
-	return
+	# create the builder
 	builder = orderedClaimsHmmBuilder.OrderedClaimsHmmBuilder(claimsDetailsOrderedMemberIDDateFile, cptDict)
 
 	# get the hmm dictionaries
