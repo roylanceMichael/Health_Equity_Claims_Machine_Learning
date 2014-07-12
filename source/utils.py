@@ -118,11 +118,10 @@ def createMarkovDictFromCsv(fileName):
 	return markovDict
 
 def savePredictResult(predictResult):
-	cnx = mysql.connector.connect(
-								user='', 
-								password='',
-								host='',
-								database='')
+	cnx = mysql.connector.connect(user='admin', 
+								password='onetwotree',
+								host='192.168.1.5',
+								database='healthequity')
 	
 	cursor = cnx.cursor(buffered=True)
 	resultTuple = (predictResult[0], predictResult[1], predictResult[2], predictResult[3], predictResult[4], predictResult[5])

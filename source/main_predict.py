@@ -43,7 +43,7 @@ def main():
 		print "processing key %s" % (key)
 		for output in predictCpt.goldFileCheck(goldFileDict[key], trainTransitions[filteringType], emissions[filteringType], filteringType):
 			fileStream.writerow(output)
-			utils.savePredictResult(output)
+			# utils.savePredictResult(output)
 
 		for output in predictCpt.predictNextState(goldFileDict[key], trainTransitions[filteringType], emissions[filteringType], filteringType):
 			granularFileStream.writerow(output)
