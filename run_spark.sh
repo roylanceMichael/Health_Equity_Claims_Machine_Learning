@@ -1,3 +1,3 @@
 #! /bin/bash
-rm -r sparkResults
+rm -r sparkBuildResults
 spark-submit spark/main.py
