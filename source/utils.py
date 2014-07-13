@@ -116,3 +116,51 @@ def createMarkovDictFromCsv(fileName):
 			markovDict[key] = { subkey: probability }
 
 	return markovDict
+
+def prepareCsvForBigDataMarkov(fileName, outputFileName):
+	csvFileObject = csv.reader(open(fileName, 'rb'))
+	writeCsvFileObject = csv.writer(open(outputFileName, 'wb'))
+
+	startRow = ['s', 's', 's', 's', 's', 's', 's', 's']
+	previousRow = None
+	previousKey = None
+	for row in csvFileObject:
+		memberId = row[0]
+		dependentId = row[1]
+
+		naturalKey = memberId + "_" + dependentId
+		# check if the natural key is different, new row
+		if naturalKey != previousKey:
+			writeCsvFileObject.writerow(row + startRow)
+		else:
+			writeCsvFileObject.writerow(row + previousRow)
+		
+		previousRow = row
+		previousKey = naturalKey
+
+def savePredictResult(predictResult):
+	cnx = mysql.connector.connect(
+								user='', 
+								password='',
+								host='',
+								database='')
+	
+	cursor = cnx.cursor(buffered=True)
+	resultTuple = (predictResult[0], predictResult[1], predictResult[2], predictResult[3], predictResult[4], predictResult[5])
+	cursor.execute(predictResultInsertStatement, resultTuple)
+
+	cnx.commit()
+	cnx.close()
+
+def saveClaimDetailDependent():
+	cnx = mysql.connector.connect(
+								user='admin', 
+								password='onetwotree',
+								host='192.168.1.5',
+								database='healthequity')
+
+  	cursor = cnx.cursor(buffered=True)
+
+
+
+

@@ -1,4 +1,3 @@
 #! /bin/bash
-sudo rm -r sparkResults
-mkdir sparkResults
+rm -r sparkResults
 spark-submit spark/main.py

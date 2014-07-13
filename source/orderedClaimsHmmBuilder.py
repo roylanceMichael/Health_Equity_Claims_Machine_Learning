@@ -58,8 +58,6 @@ class OrderedClaimsHmmBuilder:
 
 		return utils.buildTransition(buildType, row[7], row[6], '', '') + currentState
 
-	
-
 	def build(self, buildType):
 		csv_file_object = csv.reader(open(self.fileName, 'rb'))
 		header = csv_file_object.next()
