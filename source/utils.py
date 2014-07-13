@@ -5,6 +5,7 @@ import os.path
 import json
 import re
 import time
+import random
 
 configFile = "config.json"
 startState = "START_STATE"
@@ -40,6 +41,11 @@ predictResultInsertStatement = ("insert into healthequity.predictresults (Path, 
 currentYear = int(time.strftime("%Y"))
 
 filteringTypes = [noFiltering, ageOnly, genderOnly, ageGender, ageLocation]
+
+def isTest(splitRate=.98):
+	if random.random() > splitRate:
+		return True
+	return False
 
 def buildTransition(filterOption, gender, birthYear, zip, state):
 	if filterOption == noFiltering:

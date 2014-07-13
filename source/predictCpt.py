@@ -10,7 +10,7 @@ def predictTrans(goldFileList, transitionDictionary, emissionDictionary, filterO
 			previous = tup[0]
 			continue
 
-		current = utils.buildTransition(filterOption, tup[3], tup[2], tup[4], tup[5]) + tup[0]
+		current = tup[0]
 		
 		# get most frequent from previous
 		if transitionDictionary.has_key(previous) and transitionDictionary[previous].has_key(current):
@@ -29,7 +29,7 @@ def predictNextState(goldFileList, transitionDictionary, emissionDictionary, fil
 			previous = tup[0]
 			continue
 
-		current = utils.buildTransition(filterOption, tup[3], tup[2], tup[4], tup[5]) + tup[0]
+		current = tup[0]
 		
 		# get most frequent from previous
 		if transitionDictionary.has_key(previous):
@@ -71,7 +71,7 @@ def goldFileCheck(goldFileList, transitionDictionary, emissionDictionary, filter
 			path = path + " " + previous
 			continue
 
-		current = utils.buildTransition(filterOption, tup[3], tup[2], tup[4], tup[5]) + tup[0]
+		current = tup[0]
 		path = path + " " + current
 		amount = float(tup[1])
 

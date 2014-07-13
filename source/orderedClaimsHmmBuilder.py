@@ -35,7 +35,7 @@ class OrderedClaimsHmmBuilder:
 		return newDict
 
 	def determineDictionary(self, test, train):
-		if random.random() > self.setSplit:
+		if utils.isTest(self.setSplit):
 			return (test, True)
 		return (train, False)
 
@@ -88,8 +88,8 @@ class OrderedClaimsHmmBuilder:
 			dependentId = row[1]
 			rawCode = row[3]
 
-			currentCptCode = self.createCurrentState(previousCptCode, rawCode, row, buildType)
-			unfilteredCptCode = self.createRxState(previousCptCode, rawCode)
+			currentCptCode = utils.buildTransition(buildType, row[7], row[6], '', '') + rawCode
+			# unfilteredCptCode = self.createRxState(previousCptCode, currentCptCode)
 
 			patientAmount = float(row[4])
 			totalAmount = str(patientAmount)
@@ -108,7 +108,7 @@ class OrderedClaimsHmmBuilder:
 
 				if isTest:
 					goldStandard[rowMemberId + dependentId] = [(startState, 0)]
-					goldStandard[rowMemberId + dependentId].append((unfilteredCptCode, totalAmount, row[6], row[7], '', ''))
+					goldStandard[rowMemberId + dependentId].append((currentCptCode, totalAmount, row[6], row[7], '', ''))
 				
 				currentMemberId = rowMemberId
 				currentDependentId = dependentId
@@ -119,7 +119,7 @@ class OrderedClaimsHmmBuilder:
 			self.setDict(emissions, previousCptCode + "_" + currentCptCode, totalAmount)
 			
 			if isTest:
-				goldStandard[rowMemberId + dependentId].append((unfilteredCptCode, totalAmount, row[6], row[7], '', ''))
+				goldStandard[rowMemberId + dependentId].append((currentCptCode, totalAmount, row[6], row[7], '', ''))
 
 			previousCptCode = currentCptCode
 
