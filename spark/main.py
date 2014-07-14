@@ -58,7 +58,7 @@ def main():
 
             keepInModel = not utils.isTest()
 
-            goldStandard = [(startState, 0)]
+            goldStandard = []
             for item in personRecords:
                 # handle transition
                 current = buildTransitionWrapper(item[5], item[4], item[2])
@@ -73,7 +73,7 @@ def main():
                     yield ((previous, current, transitionType), 1)
                     yield ((emissionKey, patientAmount, emissionType), 1)
                 else:
-                    goldStandard.append((current, patientAmount, item[4], item[5]))
+                    goldStandard.append((previous, current, emissionKey, patientAmount, item[4], item[5]))
 
                 previous = current
 
@@ -121,6 +121,25 @@ def main():
     # gold test
     goldFiles = transitionEmissionGoldData.filter(lambda row: row[0][2] == goldType).flatMapValues(lambda row: row)
     goldFiles.saveAsTextFile(resultsDir + "goldFiles")
+
+    # TODO: finish prediction 
+    def handleGoldFileRow(row):
+        print "processing gold files"
+
+        path = row[1]
+        actualAmount = 0
+        expectedAmount = 0
+        predictedAmount = 0
+
+        for transition in path:
+            previousTransition = transition[0]
+            currentTransition = transition[1]
+            emissionKey = transition[2]
+            actualAmount = transition[3]
+
+            print transition
+
+    goldFiles.foreach(handleGoldFileRow)
 
 if __name__ == '__main__':
         main()
