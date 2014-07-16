@@ -1,7 +1,7 @@
 import os
 import datetime
 import time
-import source.utils
+import utils
 from datetime import date
 from sklearn import metrics
 from pyspark import SparkContext
@@ -12,7 +12,7 @@ def main():
     resultsDir = "sparkBuildResults/"
     transformedDir = "transformed"
     utilModuleFile = currentDir + "spark/utils.py"
-    claimsDetailsOrderedMemberIDDateZipFile = transformedDir + "/ClaimDetailDependent.zip"
+    claimsDetailsOrderedMemberIDDateZipFile = transformedDir + "/ClaimDetailDependent.csv.zip"
     claimsDetailsOrderedMemberIDDateFile = transformedDir + "/ClaimDetailDependent.csv"
     claimDataLocation = currentDir + claimsDetailsOrderedMemberIDDateFile
 
@@ -21,7 +21,7 @@ def main():
     goldType = "gold"
 
     # extract zip if it doesn't exist already
-    # utils.extractFileIfNotExists(claimsDetailsOrderedMemberIDDateZipFile, claimsDetailsOrderedMemberIDDateFile, transformedDir)
+    utils.extractFileIfNotExists(claimsDetailsOrderedMemberIDDateZipFile, claimsDetailsOrderedMemberIDDateFile, transformedDir)
 
     # 0, 1, 2, 3, 4, 5, 6, 7, 11
     # memberId, dependentId, cptCode, ccsCode, patientAmount, totalAmount, Year, Gender are the fields we care about
@@ -29,6 +29,7 @@ def main():
     def buildTransitionWrapper(gender, year, state):
         return utils.buildTransition(utils.ageGender, gender, year, "", "") + state
 
+    #map columns
     def mapTransition(row):
         columns = row.split(',')
         memberId = columns[0]
@@ -42,6 +43,7 @@ def main():
         if len(serviceDateList) == 2:
             serviceDate = datetime.datetime.strptime(serviceDateList[0], "%Y-%m-%d")
 
+        #natural key, value
         return ((memberId, dependentId), (memberId, dependentId, ccsCode, patientAmount, year, gender, serviceDate))
 
     def mapSequences(rows):
@@ -68,6 +70,7 @@ def main():
                 patientAmount = item[3]
 
                 # keep in model? 
+                #new dictionaries - yield creates each one
                 if (keepInModel):
                     yield ((previous, current, transitionType), 1)
                     yield ((emissionKey, patientAmount, emissionType), 1)
