@@ -11,7 +11,7 @@ def main():
     currentDir = os.getcwd() + "/"
     resultsDir = "sparkBuildResults/"
     transformedDir = "transformed"
-    utilModuleFile = currentDir + "source/utils.py"
+    utilModuleFile = currentDir + "spark/utils.py"
     claimsDetailsOrderedMemberIDDateZipFile = transformedDir + "/ClaimDetailDependent.zip"
     claimsDetailsOrderedMemberIDDateFile = transformedDir + "/ClaimDetailDependent.csv"
     claimDataLocation = currentDir + claimsDetailsOrderedMemberIDDateFile
