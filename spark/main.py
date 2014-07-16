@@ -1,7 +1,7 @@
 import os
 import datetime
 import time
-import utils
+import source.utils
 from datetime import date
 from sklearn import metrics
 from pyspark import SparkContext
@@ -31,7 +31,6 @@ def main():
 
     def mapTransition(row):
         columns = row.split(',')
-
         memberId = columns[0]
         dependentId = columns[1]
         ccsCode = columns[3]
